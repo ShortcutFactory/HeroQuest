@@ -38,6 +38,7 @@
             font-size: 16px;
         }
 
+        /* FIX: Body layout for sticky footer */
         body {
             font-family: var(--font-display);
             margin: 0;
@@ -49,6 +50,10 @@
             color: var(--text-parchment);
             line-height: 1.6;
             overflow-x: hidden;
+            /* Flexbox properties to create a sticky footer */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         body.modal-open {
@@ -96,7 +101,7 @@
         .heroquest-logo {
             max-width: 150px;
             height: auto;
-            filter: drop-shadow(0 5px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 20px var(--glow-gold));
+            filter: drop-shadow(0 4px 15px rgba(0,0,0,0.8)) drop-shadow(0 0 12px var(--glow-gold));
             z-index: 1002;
         }
         
@@ -136,9 +141,11 @@
         }
         #cart-counter { position: absolute; top: -8px; right: -8px; background-color: var(--error-red); color: white; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold; border: 2px solid #000; display: none; }
 
+        /* FIX: Main content area grows to push footer down */
         .main-showcase {
             padding: var(--spacing-xl) 0;
             text-align: center;
+            flex-grow: 1; /* This makes the section expand */
         }
         .main-showcase h2 {
             font-size: clamp(2rem, 5vw, 2.8rem);
@@ -157,8 +164,9 @@
         ==========================================================================
         */
         .showcase-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: var(--spacing-lg);
             min-height: 450px;
         }
@@ -173,6 +181,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            flex: 0 1 300px;
         }
         .showcase-item:hover {
             transform: translateY(-8px);
@@ -222,9 +231,9 @@
         */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000; padding: var(--spacing-sm); box-sizing: border-box; align-items: center; justify-content: center; animation: fadeIn 0.3s ease; }
         .modal-overlay.active { display: flex; }
-        .modal-content { width: 100%; max-width: 600px; max-height: 95vh; background-color: var(--bg-light-source); border: 3px solid var(--accent-gold); box-shadow: 0 0 40px rgba(0,0,0,1), inset 0 0 25px rgba(0,0,0,0.6); position: relative; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; border-radius: var(--border-radius); }
+        .modal-content { width: 100%; max-width: 600px; max-height: 88vh; background-color: var(--bg-light-source); border: 3px solid var(--accent-gold); box-shadow: 0 0 40px rgba(0,0,0,1), inset 0 0 25px rgba(0,0,0,0.6); position: relative; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; border-radius: var(--border-radius); }
         .modal-header { padding: var(--spacing-md); border-bottom: 2px solid var(--border-dark); text-align: center; background-color: rgba(0,0,0,0.3); flex-shrink: 0; }
-        .modal-header h2 { margin-bottom: 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.7); }
+        .modal-header h2 { margin-bottom: 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.7); font-size: 1.5rem; }
         .modal-body { padding: var(--spacing-lg); overflow-y: auto; background-color: var(--bg-dark-stone); }
         .modal-footer { padding: var(--spacing-md); border-top: 2px solid var(--border-dark); background-color: rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md); flex-shrink: 0; }
         .close-btn { position: absolute; top: var(--spacing-xs); right: var(--spacing-xs); font-size: 2.5rem; color: var(--text-parchment); cursor: pointer; text-shadow: 1px 1px 2px #000; z-index: 10; background: none; border: none; padding: 0.5rem; line-height: 1; transition: color 0.3s, transform 0.3s; }
@@ -232,6 +241,7 @@
         
         .product-content .modal-body { padding: 0; background: transparent; }
         .product-info-scrollable { padding: var(--spacing-lg); text-align: center; }
+        .product-info-scrollable h1 { font-size: 1.8rem; }
 
         /* Slideshow */
         .slideshow-wrapper { position: relative; display: flex; align-items: center; justify-content: center; padding: var(--spacing-md) 0; }
@@ -250,7 +260,18 @@
         .slide-arrow.next { right: var(--spacing-md); }
         .slide-arrow:hover { color: var(--glow-gold); background: rgba(0,0,0,0.6); }
         .dot-container { text-align: center; padding-top: var(--spacing-sm); }
-        .dot { cursor: pointer; height: 12px; width: 12px; margin: 0 2px; background-color: #717171; border-radius: 50%; display: inline-block; transition: background-color 0.6s ease; border: 1px solid var(--accent-gold); }
+        .dot {
+            cursor: pointer;
+            height: 14px;
+            width: 14px;
+            margin: 0 4px;
+            background-color: #717171;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.6s ease;
+            border: 1px solid var(--accent-gold);
+            padding: 0;
+        }
         .dot.active, .dot:hover { background-color: var(--glow-gold); }
         @keyframes fade { from {opacity: .4} to {opacity: 1} }
 
@@ -276,7 +297,6 @@
         #cart-total span { color: var(--accent-gold); font-family: var(--font-display); font-size: 1.5rem; margin-left: var(--spacing-sm); }
         
         .checkout-content { max-width: 500px; }
-        .checkout-header { text-align: center; margin-bottom: var(--spacing-md); }
         .checkout-steps { font-size: 1rem; color: var(--accent-gold); }
         .readable-card { background-color: rgba(0, 0, 0, 0.2); padding: var(--spacing-lg); border-radius: var(--border-radius); border: 1px solid var(--border-dark); box-shadow: inset 0 2px 10px rgba(0,0,0,0.4); }
         .form-group { margin-bottom: var(--spacing-md); }
@@ -295,7 +315,7 @@
         .order-total-container { background-color: var(--border-dark); padding: var(--spacing-md); margin-top: var(--spacing-lg); border-radius: var(--border-radius); text-align: center; }
         .order-total-container h3 { font-size: 1.5rem; color: var(--text-light); margin: 0; text-shadow: none; }
         .order-total-container h3 span { color: var(--accent-gold); font-weight: bold; }
-        
+
         #confirmation-modal .modal-body { text-align: center; }
         #confirmation-modal .modal-footer { justify-content: center; }
 
@@ -308,14 +328,24 @@
             background-color: var(--border-dark);
             color: var(--text-parchment);
             padding: var(--spacing-xl) 0;
-            margin-top: var(--spacing-xl);
+            /* margin-top is no longer needed with flex-grow on main */
             border-top: 2px solid #000;
         }
         .footer-copyright { text-align: center; margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--bg-light-source); font-size: 0.9rem; opacity: 0.6; }
         
         #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 90%; max-width: 400px; }
-        .toast { background-color: var(--card-bg); color: var(--text-parchment); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--border-radius); border: 2px solid var(--accent-gold); box-shadow: 0 5px 20px rgba(0,0,0,0.9); animation: toast-in 0.5s forwards, toast-out 0.5s 5.5s forwards; opacity: 0; text-align: center; width: 100%; box-sizing: border-box; }
+        .toast { background-color: var(--card-bg); color: var(--text-parchment); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--border-radius); border: 2px solid var(--accent-gold); box-shadow: 0 5px 20px rgba(0,0,0,0.9); animation: toast-in 0.5s forwards, toast-out 0.5s 5.5s forwards; opacity: 0; text-align: center; width: 100%; box-sizing: border-box; position: relative; }
         .toast-btn { margin-top: 0.75rem; padding: 0.4rem 0.8rem; font-size: 0.9rem; }
+        .toast-close-btn {
+            position: absolute; top: 0; right: 0;
+            background: none; border: none;
+            color: var(--text-parchment);
+            font-size: 1.5rem; line-height: 1;
+            padding: var(--spacing-sm);
+            cursor: pointer;
+            text-shadow: 1px 1px 2px #000;
+        }
+        .toast-close-btn:hover { color: var(--glow-gold); }
         @keyframes toast-in { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes toast-out { from { opacity: 1; } to { opacity: 0; } }
         @keyframes fadeIn { from {opacity: 0} to {opacity: 1} }
@@ -326,14 +356,12 @@
         ==========================================================================
         */
         @media (max-width: 768px) {
-            /* FIX: Mobile navigation overlay */
             .main-nav {
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 100vw; /* Use viewport width for guaranteed coverage */
-                height: 100vh; /* Use viewport height for guaranteed coverage */
-                /* Use a solid, themed background for reliability */
+                width: 100vw;
+                height: 100vh;
                 background-color: var(--bg-dark-stone);
                 background-image:
                     url('https://www.transparenttextures.com/patterns/dark-matter.png'),
@@ -574,7 +602,7 @@
                 name: "Der Dämonenjäger",
                 subtitle: "2 hochdetaillierte Resin-Miniaturen",
                 description: "Dieses Set enthält zwei einzigartige, hochdetaillierte Miniaturen aus bestem Resin - perfekt, um deinen Abenteuern neue Helden hinzuzufügen. Unbemalt geliefert.",
-                price: 24.90,
+                price: 129.90,
                 img: "Assets/Download.png",
                 images: ["Assets/Download.png", "Assets/IMG_8256.png", "Assets/IMG_8252.png"],
                 category: "neues"
@@ -583,7 +611,7 @@
                 name: "Die Hexe",
                 subtitle: "Dynamische Resin-Miniatur",
                 description: "Eine beeindruckende Hexe, die arkane Macht kanalisiert. Diese dynamische Miniatur aus hochwertigem Resin wird zum Mittelpunkt jeder Spielrunde. Unbemalt geliefert.",
-                price: 14.90,
+                price: 129.90,
                 img: "Assets/Download.png",
                 images: ["Assets/Download.png", "https://place-hold.it/500x400/1a1410/eaddc0&text=Ansicht+2", "https://place-hold.it/500x400/1a1410/eaddc0&text=Detailansicht"],
                 category: "neues"
@@ -610,7 +638,7 @@
                 name: "Premium Card Sleeves",
                 subtitle: "100 Stk. für alle Karten",
                 description: "Schütze deine wertvollen Spielkarten vor Abnutzung mit diesen passgenauen Premium-Sleeves in matter Ausführung.",
-                price: 8.90,
+                price: 19.90,
                 img: "1658229357379281.webp",
                 images: ["1658229357379281.webp"],
                 category: "zubehoer"
@@ -700,6 +728,7 @@
             if (target.matches('.close-btn, #close-confirmation-btn') || (target.matches('.modal-overlay') && !target.querySelector('.modal-content').contains(e.target))) { if (this.activeModal) this.closeModal(this.activeModal); return; }
             if (target.matches('.buy-btn')) { this.addToCart(target.dataset.id); this.showToast(`${this.productData[target.dataset.id].name} wurde hinzugefügt!`); return; }
             if (target.matches('.toast-cart-btn')) { if (this.activeModal) this.closeModal(this.activeModal); this.openModal(this.dom.cartModal); return; }
+            if (target.matches('.toast-close-btn')) { target.closest('.toast').remove(); return; }
             if (target.matches('#clear-cart-btn')) { this.clearCart(); return; }
             if (target.matches('.quantity-btn')) { this.updateItemQuantity(target.closest('.cart-item').dataset.id, target.dataset.action); return; }
             if (target.matches('.cart-item-remove')) { this.updateItemQuantity(target.closest('.cart-item').dataset.id, 'remove'); return; }
@@ -885,7 +914,11 @@
         showToast(message) {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.innerHTML = `<p style="margin:0 0 0.5rem 0;">${message}</p><button class="btn btn-secondary toast-btn toast-cart-btn">Warenkorb ansehen</button>`;
+            toast.innerHTML = `
+                <button class="toast-close-btn" aria-label="Schließen">&times;</button>
+                <p style="margin:0 0 0.5rem 0;">${message}</p>
+                <button class="btn btn-secondary toast-btn toast-cart-btn">Warenkorb ansehen</button>
+            `;
             this.dom.toastContainer.appendChild(toast);
             toast.addEventListener('animationend', (e) => { if (e.animationName === 'toast-out') toast.remove(); });
         }
