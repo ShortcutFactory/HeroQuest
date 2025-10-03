@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeroQuest Rüstkammer</title>
+    <link href="https://db.onlinewebfonts.com/c/fab6c5f31943098e66f2a6118872a832?family=Carter+Sans+W04+Bold" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark-stone: #2a231d;
+            --bg-light-source: #7d4a1b;
+            --card-bg: #4a362a;
+            --text-parchment: #eaddc0;
+            --accent-gold: #e8b957;
+            --glow-gold: #ffc75c;
+            --border-dark: #201a16;
+            --success-green: #5a9e34;
+            --error-red: #9e2b0e;
+            --font-readable: 'Carter Sans W04 Bold', sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-readable);
+            margin: 0;
+            background-color: var(--bg-dark-stone);
+            background-image:
+                url('https://www.transparenttextures.com/patterns/concrete-wall-2.png'),
+                radial-gradient(circle at top, var(--bg-light-source), var(--bg-dark-stone));
+            background-attachment: fixed;
+            color: var(--text-parchment);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            padding: clamp(15px, 2vw, 20px) 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .heroquest-logo {
+            max-width: 300px;
+            width: 80%;
+            height: auto;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6)) drop-shadow(0 0 10px var(--glow-gold));
+        }
+
+        .main-showcase { padding: clamp(20px, 3vw, 30px) 0; text-align: center; }
+        .main-showcase h2 { font-size: clamp(2.2em, 5vw, 3.2em); color: white; text-shadow: 2px 2px 2px #000; }
+        .main-showcase p { font-size: clamp(1.1em, 2vw, 1.3em); color: var(--accent-gold); text-shadow: 1px 1px 2px #000; }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: clamp(30px, 4vw, 50px);
+            margin-top: clamp(30px, 4vw, 50px);
+        }
+
+        .showcase-item {
+            background-color: var(--card-bg);
+            color: var(--text-parchment);
+            padding: 30px;
+            border: 2px solid var(--border-dark);
+            outline: 2px solid var(--accent-gold);
+            border-radius: 5px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0,0,0,0.5);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, outline-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .showcase-item:hover {
+            transform: translateY(-12px) scale(1.02);
+            outline-color: var(--glow-gold);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px var(--glow-gold), inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .showcase-item img { max-width: 250px; width: 100%; height: auto; margin-bottom: 20px; }
+        .showcase-item h3 { font-size: clamp(1.5em, 3vw, 1.8em); margin: 10px 0; color: white; }
+        .showcase-item p { font-size: 1em; color: var(--text-parchment); margin-bottom: 25px; min-height: 30px; }
+
+        .btn {
+            display: inline-block;
+            background-image: linear-gradient(to bottom, #b48b48, #8c6d3a);
+            color: white;
+            text-shadow: 1px 1px 2px #000;
+            padding: 12px 28px;
+            border: 2px solid var(--border-dark);
+            border-radius: 3px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.2);
+            margin-top: auto;
+        }
+        
+        .btn:hover {
+            background-image: linear-gradient(to bottom, #d4aa50, #b48b48);
+            color: white;
+            box-shadow: 0 0 15px var(--glow-gold), 0 0 5px var(--glow-gold), inset 0 1px 1px rgba(255,255,255,0.2);
+        }
+
+        .btn:disabled {
+            background-image: linear-gradient(to bottom, #777, #555);
+            cursor: not-allowed;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .btn.btn-secondary {
+            background-image: linear-gradient(to bottom, #888, #666);
+        }
+        .btn.btn-secondary:hover {
+            background-image: linear-gradient(to bottom, #999, #777);
+            box-shadow: 0 0 10px #aaa;
+        }
+
+
+        /* --- Product & Modal Styles --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            align-items: center; justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            width: 100%;
+            max-height: 95vh;
+            background-color: var(--bg-dark-stone);
+            background-image: url('https://www.transparenttextures.com/patterns/concrete-wall-2.png');
+            border: 5px solid var(--accent-gold);
+            box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            text-align: center;
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .product-content { max-width: 750px; padding: clamp(15px, 3vw, 30px); }
+        .product-info-scrollable { overflow-y: auto; padding: 15px; }
+        
+        .modal-content h1, .modal-content h2 {
+            font-size: clamp(2.2em, 5vw, 3em);
+            margin-bottom: 10px;
+            color: var(--text-parchment);
+            text-shadow: 2px 2px 2px #000;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 5px; right: 15px;
+            font-size: clamp(35px, 6vw, 50px);
+            color: var(--text-parchment);
+            cursor: pointer; text-decoration: none;
+            text-shadow: 1px 1px 2px #000; z-index: 10;
+        }
+
+        /* --- Slideshow --- */
+        .slideshow-wrapper { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px; position: relative; }
+        .slideshow-container { max-width: 500px; width: 100%; min-height: 300px; position: relative; background-color: #000; border: 2px solid var(--accent-gold); box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+        .mySlides { display: none; animation: fade 1.5s; }
+        .mySlides.active { display: block; }
+        .mySlides img { vertical-align: middle; max-width: 100%; max-height: 350px; }
+        .prev, .next { cursor: pointer; padding: 16px; color: var(--accent-gold); font-weight: bold; font-size: 2.5em; transition: 0.6s ease; user-select: none; text-shadow: 2px 2px 4px #000; z-index: 5; }
+        .prev:hover, .next:hover { color: var(--glow-gold); }
+        .dot-container { text-align: center; padding: 10px 0 0; }
+        .dot { cursor: pointer; height: 15px; width: 15px; margin: 0 2px; background-color: #717171; border-radius: 50%; display: inline-block; transition: background-color 0.6s ease; border: 1px solid var(--accent-gold); }
+        .dot.active, .dot:hover { background-color: var(--glow-gold); }
+        @keyframes fade { from {opacity: .4} to {opacity: 1} }
+        @keyframes fadeIn { from {opacity: 0} to {opacity: 1} }
+
+        /* --- Shopping Cart --- */
+        #cart-icon { position: absolute; top: 50%; right: 30px; transform: translateY(-50%); font-size: 3em; color: var(--accent-gold); cursor: pointer; transition: color 0.3s, text-shadow 0.3s; text-shadow: 2px 2px 4px #000; }
+        #cart-icon:hover { color: var(--glow-gold); text-shadow: 0 0 10px var(--glow-gold); }
+        #cart-counter { position: absolute; top: -5px; right: -15px; background-color: var(--error-red); color: white; border-radius: 50%; padding: 2px 8px; font-size: 0.5em; font-weight: bold; border: 2px solid var(--border-dark); display: none; }
+        
+        .cart-content { max-width: 600px; padding: 30px; }
+        #cart-items-list { list-style: none; padding: 0; max-height: 40vh; overflow-y: auto; margin-bottom: 20px; }
+        .cart-item { display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--card-bg); padding-bottom: 15px; }
+        .cart-item img { width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--border-dark); margin-right: 15px; }
+        .cart-item-info { flex-grow: 1; text-align: left; }
+        .cart-item-info h4 { margin: 0 0 5px 0; color: white; font-size: 1.1em; }
+        .cart-item-controls { display: flex; align-items: center; }
+        .cart-item-controls button { background: var(--card-bg); border: 1px solid var(--border-dark); color: var(--accent-gold); cursor: pointer; width: 25px; height: 25px; font-size: 1.2em; }
+        .cart-item-controls input { width: 40px; text-align: center; background: var(--bg-dark-stone); border: 1px solid var(--border-dark); color: var(--text-parchment); margin: 0 5px; -moz-appearance: textfield; }
+        .cart-item-remove { background: none; border: none; color: var(--error-red); font-size: 1.5em; cursor: pointer; margin-left: 15px; }
+        #cart-total { text-align: right; font-size: 1.5em; color: var(--accent-gold); margin-top: 20px; }
+        .cart-footer { display: flex; justify-content: space-between; margin-top: 30px; }
+        .checkout-btn { background-image: linear-gradient(to bottom, var(--success-green), #447828); }
+        .checkout-btn:hover { background-image: linear-gradient(to bottom, #6cc741, var(--success-green)); box-shadow: 0 0 15px #6cc741; }
+
+        /* --- Toast Notifications --- */
+        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .toast { background-color: var(--card-bg); color: var(--text-parchment); padding: 15px 25px; border-radius: 5px; border: 2px solid var(--accent-gold); box-shadow: 0 5px 15px rgba(0,0,0,0.7); animation: toast-in 0.5s, toast-out 0.5s 2.5s; opacity: 0; }
+        @keyframes toast-in { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes toast-out { from { opacity: 1; } to { opacity: 0; } }
+
+        /* --- Checkout Modal --- */
+        .checkout-content { max-width: 700px; padding: 30px; }
+        .checkout-header { text-align: center; margin-bottom: 20px; }
+        .checkout-steps { font-size: 1.2em; color: var(--accent-gold); }
+        .checkout-body { text-align: left; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--accent-gold); }
+        .form-group input { width: 100%; padding: 10px; background: var(--bg-dark-stone); border: 1px solid var(--border-dark); color: var(--text-parchment); font-family: inherit; font-size: 1em; box-sizing: border-box; }
+        .form-group input:focus { outline: 1px solid var(--glow-gold); }
+        .checkout-footer { display: flex; justify-content: space-between; margin-top: 30px; }
+        
+        /* Payment Options */
+        .payment-options { display: flex; flex-direction: column; gap: 10px; }
+        .payment-option { padding: 15px; border: 2px solid var(--card-bg); border-radius: 5px; cursor: pointer; transition: all 0.3s; }
+        .payment-option:hover { border-color: var(--accent-gold); }
+        .payment-option.selected { border-color: var(--glow-gold); background-color: rgba(255, 199, 92, 0.1); }
+        .payment-option input[type="radio"] { display: none; }
+        .payment-option label { font-size: 1.2em; color: white; cursor: pointer; }
+
+        /* Order Review */
+        #order-review-summary { border: 1px solid var(--card-bg); padding: 15px; margin-top: 20px; }
+        #order-review-summary h4 { color: var(--accent-gold); margin-top: 0; border-bottom: 1px solid var(--accent-gold); padding-bottom: 5px; }
+        #order-review-summary p { margin: 5px 0; }
+
+        /* Confirmation Screen */
+        .confirmation-content { padding: 40px; text-align: center; }
+        .confirmation-icon { font-size: 5em; color: var(--success-green); text-shadow: 0 0 15px var(--success-green); }
+        #confirmation-order-id { font-size: 1.2em; color: var(--accent-gold); background: var(--card-bg); padding: 5px 10px; border-radius: 5px; }
+
+        @media (max-width: 768px) {
+            .prev, .next { position: absolute; top: 50%; transform: translateY(-50%); font-size: 2em; background-color: rgba(0,0,0,0.4); color: white; padding: 10px; }
+            .prev { left: 10px; }
+            .next { right: 10px; }
+            #cart-icon { font-size: 2.5em; right: 20px; }
+            .modal-content { width: 95%; margin: 5% auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-shop">
+        <header>
+            <div class="container">
+                <img src="Assets/IMG_5618.PNG" alt="HeroQuest Logo" class="heroquest-logo">
+                <div id="cart-icon">
+                    &#128722;
+                    <span id="cart-counter">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-showcase">
+            <div class="container">
+                <h2>Die beste Ausrüstung für den anspruchsvollen Abenteurer</h2>
+                <p>Wappne dich für die dunkelsten Verliese.</p>
+                <div class="showcase-grid">
+                    <div class="showcase-item">
+                        <img src="Assets/Download.png" alt="Dämonenjäger">
+                        <div>
+                           <h3>Der Dämonenjäger</h3>
+                           <p>2 Fanmade Minis + Karten</p>
+                        </div>
+                        <a class="btn learn-more-btn" data-target="demonhunter-page">Mehr erfahren & Kaufen</a>
+                    </div>
+                    <div class="showcase-item">
+                        <img src="Assets/Download.png" alt="Hexe">
+                        <div>
+                            <h3>Die Hexe</h3>
+                            <p>Kanalisiere die Mächte der Magie selbst.</p>
+                        </div>
+                        <a class="btn learn-more-btn" data-target="witch-page">Mehr erfahren & Kaufen</a>
+                    </div>
+                    <div class="showcase-item">
+                        <img src="1658229357379281.webp" alt="Sleeves">
+                        <div>
+                            <h3>Sleeves</h3>
+                            <p>Schütze deine wertvollen Karten vor Abnutzung.</p>
+                        </div>
+                        <a class="btn learn-more-btn" data-target="sleeves-page">Mehr erfahren & Kaufen</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modals -->
+    <div id="demonhunter-page" class="modal-overlay product-modal">
+        <div class="modal-content product-content">
+            <a class="close-btn">&times;</a>
+            <div class="slideshow-wrapper">
+                <a class="prev">&#10094;</a><div class="slideshow-container"></div><a class="next">&#10095;</a>
+            </div>
+            <div class="dot-container"></div>
+            <div class="product-info-scrollable">
+                <h1>Der Dämonenjäger</h1>
+                <p class="description">Diese meisterhaft gefertigte Klinge bietet eine perfekte Mischung aus Angriff und Verteidigung. Ihre Stärke von drei Kampfwürfeln macht sie zu einer bedeutenden Verbesserung für jeden Helden.</p>
+                <p class="price">149,90 €</p>
+                <button class="btn buy-btn" data-id="demonhunter" data-name="Der Dämonenjäger" data-price="149.90" data-img="Assets/Download.png">In den Warenkorb</button>
+            </div>
+        </div>
+    </div>
+    <div id="sleeves-page" class="modal-overlay product-modal">
+        <div class="modal-content product-content">
+            <a class="close-btn">&times;</a>
+            <div class="slideshow-wrapper">
+                <a class="prev">&#10094;</a><div class="slideshow-container"></div><a class="next">&#10095;</a>
+            </div>
+            <div class="dot-container"></div>
+            <div class="product-info-scrollable">
+                <h1>Sleeves</h1>
+                <p class="description">Diese hochwertigen Hüllen schützen deine Karten vor den Gefahren unzähliger Abenteuer. Ein Muss für jeden ernsthaften Spieler, der sein Spielmaterial in tadellosem Zustand halten will.</p>
+                <p class="price">19,90 €</p>
+                <button class="btn buy-btn" data-id="sleeves" data-name="Sleeves" data-price="19.90" data-img="1658229357379281.webp">In den Warenkorb</button>
+            </div>
+        </div>
+    </div>
+    <div id="witch-page" class="modal-overlay product-modal">
+        <div class="modal-content product-content">
+            <a class="close-btn">&times;</a>
+            <div class="slideshow-wrapper">
+                <a class="prev">&#10094;</a><div class="slideshow-container"></div><a class="next">&#10095;</a>
+            </div>
+            <div class="dot-container"></div>
+            <div class="product-info-scrollable">
+                <h1>Die Hexe</h1>
+                <p class="description">Dieser lange, alte Stab leuchtet mit einem sanften, magischen Licht. Exklusiv für den Zauberer, ermöglicht er diagonale Angriffe und schützt so vor direkten Vergeltungsschlägen.</p>
+                <p class="price">149,90 €</p>
+                <button class="btn buy-btn" data-id="witch" data-name="Die Hexe" data-price="149.90" data-img="Assets/Download.png">In den Warenkorb</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cart-modal" class="modal-overlay">
+        <div class="modal-content cart-content">
+            <a class="close-btn">&times;</a>
+            <h2>Warenkorb</h2>
+            <ul id="cart-items-list"></ul>
+            <p id="cart-total">Gesamt: 0,00 €</p>
+            <div class="cart-footer">
+                <button class="btn btn-secondary" id="clear-cart-btn">Warenkorb leeren</button>
+                <button class="btn checkout-btn" id="go-to-checkout-btn">Zur Kasse</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal-overlay">
+        <div class="modal-content checkout-content">
+            <a class="close-btn">&times;</a>
+            <div id="checkout-container">
+                <!-- Checkout steps will be rendered here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-content confirmation-content">
+            <p class="confirmation-icon">&#10004;</p>
+            <h2>Bestellung erfolgreich!</h2>
+            <p>Vielen Dank für deinen Einkauf in der Rüstkammer.</p>
+            <p>Deine Bestellnummer lautet:</p>
+            <p><strong id="confirmation-order-id"></strong></p>
+            <button class="btn" id="close-confirmation-btn">Weiter einkaufen</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // === DATA & STATE MANAGEMENT ===
+        const productData = {
+            "demonhunter-page": { images: ["Assets/Download.png", "Assets/IMG_8256.png", "Assets/IMG_8252.png"] },
+            "sleeves-page": { images: ["1658229357379281.webp", "https://place-hold.it/500x400/4a362a/eaddc0&text=Ansicht+2", "https://place-hold.it/500x400/4a362a/eaddc0&text=Detailansicht"] },
+            "witch-page": { images: ["Assets/Download.png", "https://place-hold.it/500x400/4a362a/eaddc0&text=Ansicht+2", "https://place-hold.it/500x400/4a362a/eaddc0&text=Detailansicht"] }
+        };
+
+        let cart = [];
+        let checkoutState = {
+            step: 'shipping',
+            shippingInfo: {},
+            paymentMethod: ''
+        };
+
+        // === INITIALIZATION ===
+        initializeSlideshows();
+        loadCartFromStorage();
+        addGlobalEventListeners();
+
+        // === SLIDESHOW & PRODUCT MODAL LOGIC ===
+        function initializeSlideshows() {
+            document.querySelectorAll('.product-modal').forEach(modal => {
+                const productId = modal.id;
+                if (productData[productId]) {
+                    const slideContainer = modal.querySelector('.slideshow-container');
+                    const dotContainer = modal.querySelector('.dot-container');
+                    productData[productId].images.forEach((imgUrl, index) => {
+                        slideContainer.innerHTML += `<div class="mySlides"><img src="${imgUrl}" alt="Produktbild ${index + 1}"></div>`;
+                        dotContainer.innerHTML += `<span class="dot" data-slide-to="${index + 1}"></span>`;
+                    });
+                }
+            });
+        }
+
+        function showSlide(modal, index) {
+            const slides = modal.querySelectorAll('.mySlides');
+            const dots = modal.querySelectorAll('.dot');
+            
+            if (index > slides.length) index = 1;
+            if (index < 1) index = slides.length;
+            
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+            
+            slides[index - 1].classList.add('active');
+            dots[index - 1].classList.add('active');
+            
+            modal.dataset.currentSlide = index;
+        }
+
+        function changeSlide(modal, direction) {
+            let currentIndex = parseInt(modal.dataset.currentSlide || 1, 10);
+            showSlide(modal, currentIndex + direction);
+        }
+
+        // === EVENT HANDLING ===
+        function addGlobalEventListeners() {
+            document.querySelectorAll('.learn-more-btn').forEach(btn => btn.addEventListener('click', openModal));
+            document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closeModal));
+            document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', handleAddToCartClick));
+            document.querySelectorAll('.product-modal').forEach(modal => {
+                modal.addEventListener('click', e => {
+                    if (e.target.matches('.next')) changeSlide(modal, 1);
+                    if (e.target.matches('.prev')) changeSlide(modal, -1);
+                    if (e.target.matches('.dot')) showSlide(modal, parseInt(e.target.dataset.slideTo, 10));
+                });
+            });
+            
+            document.getElementById('cart-icon').addEventListener('click', () => document.getElementById('cart-modal').classList.add('active'));
+            document.getElementById('clear-cart-btn').addEventListener('click', clearCart);
+            document.getElementById('go-to-checkout-btn').addEventListener('click', startCheckout);
+            document.getElementById('close-confirmation-btn').addEventListener('click', () => document.getElementById('confirmation-modal').classList.remove('active'));
+        }
+
+        function openModal(e) {
+            const targetId = e.target.dataset.target;
+            if (targetId) {
+                const modal = document.getElementById(targetId);
+                modal.classList.add('active');
+                showSlide(modal, 1); // **FIX**: Initialize slideshow on open
+            }
+        }
+
+        function closeModal(e) {
+            e.target.closest('.modal-overlay').classList.remove('active');
+        }
+
+        function handleAddToCartClick(e) {
+            const product = e.target.dataset;
+            const existingItem = cart.find(item => item.id === product.id);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...product, price: parseFloat(product.price), quantity: 1 });
+            }
+            updateCart();
+            showToast(`${product.name} wurde in den Warenkorb gelegt!`);
+        }
+
+        // === CART LOGIC ===
+        function updateCart() {
+            renderCartItems();
+            updateCartCounter();
+            updateCartTotal();
+            saveCartToStorage();
+        }
+
+        function renderCartItems() {
+            const cartItemsList = document.getElementById('cart-items-list');
+            cartItemsList.innerHTML = '';
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<li>Dein Warenkorb ist leer.</li>';
+                document.getElementById('go-to-checkout-btn').disabled = true;
+                return;
+            }
+            document.getElementById('go-to-checkout-btn').disabled = false;
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}">
+                    <div class="cart-item-info"><h4>${item.name}</h4><p>${item.price.toFixed(2)} €</p></div>
+                    <div class="cart-item-controls">
+                        <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                        <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" class="quantity-input">
+                        <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
+                    </div>
+                    <button class="cart-item-remove" data-id="${item.id}">&times;</button>`;
+                cartItemsList.appendChild(li);
+            });
+            addCartItemEventListeners();
+        }
+
+        function addCartItemEventListeners() {
+            document.querySelectorAll('.quantity-btn').forEach(btn => btn.addEventListener('click', handleQuantityChange));
+            document.querySelectorAll('.quantity-input').forEach(input => input.addEventListener('change', handleQuantityInputChange));
+            document.querySelectorAll('.cart-item-remove').forEach(btn => btn.addEventListener('click', handleRemoveItem));
+        }
+
+        const handleQuantityChange = e => updateItemQuantity(e.target.dataset.id, e.target.dataset.action);
+        const handleQuantityInputChange = e => updateItemQuantity(e.target.dataset.id, 'set', parseInt(e.target.value));
+        const handleRemoveItem = e => updateItemQuantity(e.target.dataset.id, 'remove');
+        
+        function updateItemQuantity(id, action, value = null) {
+            const itemIndex = cart.findIndex(i => i.id === id);
+            if (itemIndex === -1) return;
+            const item = cart[itemIndex];
+
+            switch (action) {
+                case 'increase': item.quantity++; break;
+                case 'decrease': item.quantity--; break;
+                case 'set': if (value > 0) item.quantity = value; break;
+                case 'remove': item.quantity = 0; break;
+            }
+
+            if (item.quantity <= 0) cart.splice(itemIndex, 1);
+            updateCart();
+        }
+        
+        function updateCartCounter() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCounter = document.getElementById('cart-counter');
+            cartCounter.textContent = totalItems;
+            cartCounter.style.display = totalItems > 0 ? 'block' : 'none';
+        }
+
+        function updateCartTotal() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cart-total').textContent = `Gesamt: ${total.toFixed(2)} €`;
+        }
+
+        function clearCart() {
+            if (confirm('Möchtest du den Warenkorb wirklich leeren?')) {
+                cart = [];
+                updateCart();
+            }
+        }
+
+        // === LOCAL STORAGE PERSISTENCE ===
+        function saveCartToStorage() {
+            localStorage.setItem('heroquestCart', JSON.stringify(cart));
+        }
+
+        function loadCartFromStorage() {
+            const savedCart = localStorage.getItem('heroquestCart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateCart();
+            }
+        }
+
+        // === CHECKOUT LOGIC ===
+        function startCheckout() {
+            if (cart.length === 0) return;
+            document.getElementById('cart-modal').classList.remove('active');
+            document.getElementById('checkout-modal').classList.add('active');
+            checkoutState.step = 'shipping';
+            renderCheckoutStep();
+        }
+
+        function renderCheckoutStep() {
+            const container = document.getElementById('checkout-container');
+            container.innerHTML = ''; // Clear previous step
+            switch (checkoutState.step) {
+                case 'shipping': container.innerHTML = getShippingHTML(); addShippingListeners(); break;
+                case 'payment': container.innerHTML = getPaymentHTML(); addPaymentListeners(); break;
+                case 'review': container.innerHTML = getReviewHTML(); addReviewListeners(); break;
+            }
+        }
+
+        // Checkout Step Renderers (HTML templates)
+        const getShippingHTML = () => `
+            <div class="checkout-header"><h2>Lieferadresse</h2><p class="checkout-steps">Schritt 1 von 3</p></div>
+            <form class="checkout-body" id="shipping-form">
+                <div class="form-group"><label for="name">Vollständiger Name</label><input type="text" id="name" required value="${checkoutState.shippingInfo.name || ''}"></div>
+                <div class="form-group"><label for="address">Adresse</label><input type="text" id="address" required value="${checkoutState.shippingInfo.address || ''}"></div>
+                <div class="form-group"><label for="city">Stadt</label><input type="text" id="city" required value="${checkoutState.shippingInfo.city || ''}"></div>
+                <div class="form-group"><label for="zip">PLZ</label><input type="text" id="zip" required value="${checkoutState.shippingInfo.zip || ''}"></div>
+            </form>
+            <div class="checkout-footer">
+                <button class="btn btn-secondary" disabled>Zurück</button>
+                <button class="btn" id="shipping-next-btn">Weiter zur Zahlung</button>
+            </div>`;
+
+        const getPaymentHTML = () => `
+            <div class="checkout-header"><h2>Zahlungsmethode</h2><p class="checkout-steps">Schritt 2 von 3</p></div>
+            <div class="checkout-body">
+                <div class="payment-options">
+                    <div class="payment-option"><label><input type="radio" name="payment" value="PayPal"> PayPal</label></div>
+                    <div class="payment-option"><label><input type="radio" name="payment" value="Kreditkarte"> Kreditkarte</label></div>
+                    <div class="payment-option"><label><input type="radio" name="payment" value="Banküberweisung"> Banküberweisung</label></div>
+                </div>
+            </div>
+            <div class="checkout-footer">
+                <button class="btn btn-secondary" id="payment-back-btn">Zurück zur Adresse</button>
+                <button class="btn" id="payment-next-btn" disabled>Weiter zur Übersicht</button>
+            </div>`;
+        
+        const getReviewHTML = () => {
+            const { name, address, city, zip } = checkoutState.shippingInfo;
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            return `
+            <div class="checkout-header"><h2>Bestellübersicht</h2><p class="checkout-steps">Schritt 3 von 3</p></div>
+            <div class="checkout-body">
+                <div id="order-review-summary">
+                    <h4>Lieferung an:</h4><p>${name}<br>${address}<br>${zip} ${city}</p>
+                    <h4>Zahlung mit:</h4><p>${checkoutState.paymentMethod}</p>
+                    <h4>Artikel:</h4>${cart.map(item => `<p>${item.quantity}x ${item.name} - ${(item.price * item.quantity).toFixed(2)} €</p>`).join('')}
+                </div>
+                <h3 id="cart-total" style="text-align: right; font-size: 1.5em; color: var(--accent-gold); margin-top: 20px;">Gesamt: ${total.toFixed(2)} €</h3>
+            </div>
+            <div class="checkout-footer">
+                <button class="btn btn-secondary" id="review-back-btn">Zurück zur Zahlung</button>
+                <button class="btn checkout-btn" id="confirm-purchase-btn">Jetzt Kaufen</button>
+            </div>`;
+        };
+        
+        function addShippingListeners() {
+            const form = document.getElementById('shipping-form');
+            const nextBtn = document.getElementById('shipping-next-btn');
+            const validate = () => { nextBtn.disabled = !form.checkValidity(); };
+            form.addEventListener('input', validate);
+            validate(); // Initial check
+            nextBtn.addEventListener('click', () => {
+                if(form.checkValidity()) {
+                    checkoutState.shippingInfo = { name: form.name.value, address: form.address.value, city: form.city.value, zip: form.zip.value };
+                    checkoutState.step = 'payment';
+                    renderCheckoutStep();
+                }
+            });
+        }
+        
+        function addPaymentListeners() {
+            const nextBtn = document.getElementById('payment-next-btn');
+            const options = document.querySelectorAll('.payment-option');
+            options.forEach(opt => {
+                const radio = opt.querySelector('input');
+                if (radio.value === checkoutState.paymentMethod) {
+                    radio.checked = true;
+                    opt.classList.add('selected');
+                    nextBtn.disabled = false;
+                }
+                opt.addEventListener('click', () => {
+                    options.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    radio.checked = true;
+                    checkoutState.paymentMethod = radio.value;
+                    nextBtn.disabled = false;
+                });
+            });
+            document.getElementById('payment-back-btn').addEventListener('click', () => { checkoutState.step = 'shipping'; renderCheckoutStep(); });
+            nextBtn.addEventListener('click', () => { checkoutState.step = 'review'; renderCheckoutStep(); });
+        }
+
+        function addReviewListeners() {
+            document.getElementById('review-back-btn').addEventListener('click', () => { checkoutState.step = 'payment'; renderCheckoutStep(); });
+            document.getElementById('confirm-purchase-btn').addEventListener('click', processOrder);
+        }
+
+        function processOrder() {
+            const btn = document.getElementById('confirm-purchase-btn');
+            btn.disabled = true;
+            btn.textContent = 'Verarbeite...';
+            
+            setTimeout(() => {
+                document.getElementById('checkout-modal').classList.remove('active');
+                document.getElementById('confirmation-modal').classList.add('active');
+                document.getElementById('confirmation-order-id').textContent = `HQ-${Date.now()}`;
+                cart = [];
+                updateCart();
+                btn.disabled = false;
+                btn.textContent = 'Jetzt Kaufen';
+            }, 1500);
+        }
+
+        // === UI HELPERS ===
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    });
+    </script>
+</body>
+</html>
