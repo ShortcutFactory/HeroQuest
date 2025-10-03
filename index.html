@@ -38,7 +38,6 @@
             font-size: 16px;
         }
 
-        /* FIX: Body layout for sticky footer */
         body {
             font-family: var(--font-display);
             margin: 0;
@@ -50,7 +49,6 @@
             color: var(--text-parchment);
             line-height: 1.6;
             overflow-x: hidden;
-            /* Flexbox properties to create a sticky footer */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -141,11 +139,10 @@
         }
         #cart-counter { position: absolute; top: -8px; right: -8px; background-color: var(--error-red); color: white; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold; border: 2px solid #000; display: none; }
 
-        /* FIX: Main content area grows to push footer down */
         .main-showcase {
             padding: var(--spacing-xl) 0;
             text-align: center;
-            flex-grow: 1; /* This makes the section expand */
+            flex-grow: 1;
         }
         .main-showcase h2 {
             font-size: clamp(2rem, 5vw, 2.8rem);
@@ -319,6 +316,26 @@
         #confirmation-modal .modal-body { text-align: center; }
         #confirmation-modal .modal-footer { justify-content: center; }
 
+        /* FIX: A simpler, more elegant CSS-only checkmark */
+        .confirmation-icon {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            position: relative;
+            margin-bottom: var(--spacing-md);
+        }
+        .confirmation-icon::after {
+            content: '';
+            position: absolute;
+            left: 25px; /* Adjusted for centering */
+            top: 10px;  /* Adjusted for centering */
+            width: 25px;
+            height: 50px;
+            border: solid var(--glow-green);
+            border-width: 0 10px 10px 0;
+            transform: rotate(45deg);
+        }
+
         /*
         ==========================================================================
         FOOTER & TOAST
@@ -328,7 +345,6 @@
             background-color: var(--border-dark);
             color: var(--text-parchment);
             padding: var(--spacing-xl) 0;
-            /* margin-top is no longer needed with flex-grow on main */
             border-top: 2px solid #000;
         }
         .footer-copyright { text-align: center; margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--bg-light-source); font-size: 0.9rem; opacity: 0.6; }
@@ -524,7 +540,7 @@
                  <h2 id="confirmation-heading">Bestellung erfolgreich!</h2>
             </div>
             <div class="modal-body">
-                <p class="confirmation-icon" style="color:var(--glow-green); font-size: 4rem; text-shadow: 0 0 15px var(--glow-green);">&#10004;</p>
+                <div class="confirmation-icon"></div>
                 <p>Vielen Dank für deinen Einkauf in der Rüstkammer.</p>
                 <p>Deine Bestellnummer lautet:</p>
                 <p><strong id="confirmation-order-id" style="font-size: 1.2rem; color: var(--glow-gold); background: var(--card-bg); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--border-radius); border: 1px solid var(--border-dark); display: inline-block; margin-top: var(--spacing-sm);"></strong></p>
