@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HeroQuest Rüstkammer - Polished Redesign</title>
-    <!-- Thematic font for headings -->
+    <!-- Thematic font for all text -->
     <link href="https://db.onlinewebfonts.com/c/fab6c5f31943098e66f2a6118872a832?family=Carter+Sans+W04+Bold" rel="stylesheet">
-    <!-- Readable font for body text -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /*
         ==========================================================================
@@ -29,7 +25,6 @@
             --success-green: #5a9e34;
             --error-red: #c53030;
             --font-display: 'Carter Sans W04 Bold', sans-serif;
-            --font-body: 'Open Sans', sans-serif;
             --spacing-xs: 0.25rem;
             --spacing-sm: 0.5rem;
             --spacing-md: 1rem;
@@ -44,18 +39,19 @@
         }
 
         body {
-    font-family: var(--font-readable);
-    margin: 0;
-    background-color: var(--bg-dark-stone);
-    /* THIS IS THE LINE THAT ADDS THE GLOW: */
-    background-image:
-        url('https://www.transparenttextures.com/patterns/concrete-wall-2.png'),
-        radial-gradient(circle at top, var(--bg-light-source), var(--bg-dark-stone)); /* This is the line */
-    background-attachment: fixed;
-    color: var(--text-parchment);
-    line-height: 1.6;
-    overflow-x: hidden;
-}
+            /* IMPROVEMENT: Use the single, important font everywhere */
+            font-family: var(--font-display);
+            margin: 0;
+            background-color: var(--bg-dark-stone);
+            /* THIS IS THE LINE THAT ADDS THE GLOW: */
+            background-image:
+                url('https://www.transparenttextures.com/patterns/concrete-wall-2.png'),
+                radial-gradient(circle at top, var(--bg-light-source), var(--bg-dark-stone)); /* This is the line */
+            background-attachment: fixed;
+            color: var(--text-parchment);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
         body.modal-open {
             overflow: hidden;
@@ -183,7 +179,7 @@
             border-radius: var(--border-radius);
             text-decoration: none;
             font-weight: bold;
-            font-family: var(--font-body);
+            font-family: var(--font-display); /* Use the main display font */
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
@@ -442,7 +438,7 @@
         }
         #confirmation-order-id {
             font-size: 1.2rem;
-            font-family: var(--font-body);
+            font-family: var(--font-display); /* Use the main display font */
             color: var(--glow-gold);
             background: var(--card-bg);
             padding: var(--spacing-sm) var(--spacing-md);
@@ -469,6 +465,17 @@
         @media (min-width: 1024px) {
             html { font-size: 18px; }
             .showcase-grid { gap: var(--spacing-xl); }
+        }
+
+        /* IMPROVEMENT: Super duper phone-friendly checkout */
+        @media (max-width: 480px) {
+            #checkout-modal .modal-footer {
+                flex-direction: column-reverse; /* Stack buttons, primary action on top */
+                gap: var(--spacing-sm);
+            }
+            #checkout-modal .modal-footer .btn {
+                width: 100%; /* Make buttons full-width for easy tapping */
+            }
         }
     </style>
 </head>
