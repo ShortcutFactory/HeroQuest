@@ -78,7 +78,7 @@
         ==========================================================================
         */
         header {
-            padding: var(--spacing-sm) 0; /* Adjusted padding */
+            padding: var(--spacing-sm) 0;
             border-bottom: 2px solid var(--border-dark);
             background-color: rgba(0,0,0,0.4);
             position: sticky;
@@ -94,10 +94,10 @@
         }
 
         .heroquest-logo {
-            max-width: 150px; /* Slightly smaller for better mobile fit */
+            max-width: 150px;
             height: auto;
             filter: drop-shadow(0 5px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 20px var(--glow-gold));
-            z-index: 1100; /* Ensure logo is above mobile nav background */
+            z-index: 1002;
         }
         
         .main-nav ul {
@@ -118,7 +118,6 @@
             text-shadow: 0 0 8px var(--glow-gold);
         }
         
-        /* NEW: Hamburger Menu Styles */
         .hamburger-menu { display: none; }
         .nav-right-cluster { display: flex; align-items: center; gap: var(--spacing-md); }
 
@@ -159,7 +158,6 @@
         */
         .showcase-grid {
             display: grid;
-            /* NEW: Responsive grid columns */
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: var(--spacing-lg);
             min-height: 450px;
@@ -222,7 +220,7 @@
         MODALS & SLIDESHOW
         ==========================================================================
         */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000; padding: var(--spacing-sm); /* Adjusted for mobile */ box-sizing: border-box; align-items: center; justify-content: center; animation: fadeIn 0.3s ease; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000; padding: var(--spacing-sm); box-sizing: border-box; align-items: center; justify-content: center; animation: fadeIn 0.3s ease; }
         .modal-overlay.active { display: flex; }
         .modal-content { width: 100%; max-width: 600px; max-height: 95vh; background-color: var(--bg-light-source); border: 3px solid var(--accent-gold); box-shadow: 0 0 40px rgba(0,0,0,1), inset 0 0 25px rgba(0,0,0,0.6); position: relative; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; border-radius: var(--border-radius); }
         .modal-header { padding: var(--spacing-md); border-bottom: 2px solid var(--border-dark); text-align: center; background-color: rgba(0,0,0,0.3); flex-shrink: 0; }
@@ -236,13 +234,21 @@
         .product-info-scrollable { padding: var(--spacing-lg); text-align: center; }
 
         /* Slideshow */
-        .slideshow-wrapper { display: flex; align-items: center; justify-content: center; gap: var(--spacing-sm); position: relative; padding: var(--spacing-md) 0; }
+        .slideshow-wrapper { position: relative; display: flex; align-items: center; justify-content: center; padding: var(--spacing-md) 0; }
         .slideshow-container { max-width: 500px; width: 100%; position: relative; background-color: #000; border: 2px solid var(--accent-gold); box-shadow: 0 5px 15px rgba(0,0,0,0.5); min-height: 250px; display:flex; align-items:center; justify-content:center;}
         .slide { display: none; animation: fade 1s; }
         .slide.active { display: block; }
         .slide img { vertical-align: middle; max-width: 100%; max-height: 300px; object-fit: contain; }
-        .slide-arrow { cursor: pointer; color: var(--accent-gold); font-weight: bold; font-size: 2rem; transition: 0.3s ease; user-select: none; z-index: 5; background: none; border: none; padding: var(--spacing-md); }
-        .slide-arrow:hover { color: var(--glow-gold); transform: scale(1.1); }
+        .slide-arrow {
+            cursor: pointer; color: var(--accent-gold); font-weight: bold; font-size: 2rem;
+            transition: 0.3s ease; user-select: none; z-index: 5; background: rgba(0,0,0,0.4);
+            border: none; border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 50%; transform: translateY(-50%);
+        }
+        .slide-arrow.prev { left: var(--spacing-md); }
+        .slide-arrow.next { right: var(--spacing-md); }
+        .slide-arrow:hover { color: var(--glow-gold); background: rgba(0,0,0,0.6); }
         .dot-container { text-align: center; padding-top: var(--spacing-sm); }
         .dot { cursor: pointer; height: 12px; width: 12px; margin: 0 2px; background-color: #717171; border-radius: 50%; display: inline-block; transition: background-color 0.6s ease; border: 1px solid var(--accent-gold); }
         .dot.active, .dot:hover { background-color: var(--glow-gold); }
@@ -254,7 +260,7 @@
         ==========================================================================
         */
         #cart-items-list { list-style: none; padding: 0; margin:0; }
-        .cart-item { display: flex; align-items: center; padding: var(--spacing-md) 0; border-bottom: 1px solid var(--border-dark); gap: var(--spacing-md); flex-wrap: wrap; /* NEW: Allow wrapping on small screens */ }
+        .cart-item { display: flex; align-items: center; padding: var(--spacing-md) 0; border-bottom: 1px solid var(--border-dark); gap: var(--spacing-md); flex-wrap: wrap; }
         .cart-item:last-child { border-bottom: none; }
         .cart-item img { width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--border-dark); flex-shrink: 0; border-radius: var(--border-radius); }
         .cart-item-info { flex-grow: 1; text-align: left; }
@@ -316,24 +322,28 @@
 
         /*
         ==========================================================================
-        NEW: MOBILE & RESPONSIVE STYLES
+        MOBILE & RESPONSIVE STYLES
         ==========================================================================
         */
         @media (max-width: 768px) {
+            /* FIX: Mobile navigation overlay */
             .main-nav {
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(26, 20, 16, 0.98);
-                backdrop-filter: blur(10px);
+                width: 100vw; /* Use viewport width for guaranteed coverage */
+                height: 100vh; /* Use viewport height for guaranteed coverage */
+                /* Use a solid, themed background for reliability */
+                background-color: var(--bg-dark-stone);
+                background-image:
+                    url('https://www.transparenttextures.com/patterns/dark-matter.png'),
+                    radial-gradient(circle at top, #28221c, var(--bg-dark-stone));
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 transition: transform 0.3s ease-in-out;
                 transform: translateX(-100%);
-                z-index: 1000;
+                z-index: 1001;
             }
 
             .main-nav.active {
@@ -401,13 +411,6 @@
                 margin-left: 0;
                 margin: 0 auto;
             }
-
-             .slideshow-wrapper {
-                flex-direction: column;
-            }
-            .slide-arrow {
-                transform: rotate(90deg);
-            }
         }
     </style>
 </head>
@@ -417,7 +420,6 @@
             <div class="header-content">
                 <a href="#"><img src="Assets/IMG_5618.PNG" alt="HeroQuest Logo" class="heroquest-logo"></a>
                 
-                <!-- NEW: Cluster of right-side icons for easier layout management -->
                 <div class="nav-right-cluster">
                     <nav class="main-nav" id="main-nav">
                         <ul id="nav-filters">
@@ -433,7 +435,6 @@
                         </button>
                         <span id="cart-counter">0</span>
                     </div>
-                    <!-- NEW: Hamburger Menu Button -->
                     <button class="hamburger-menu" id="hamburger-menu" aria-label="Navigation öffnen" aria-expanded="false" aria-controls="main-nav">
                         <span class="bar"></span>
                         <span class="bar"></span>
@@ -527,10 +528,10 @@
                 <button class="close-btn" aria-label="Schließen">&times;</button>
                 <div class="modal-body">
                     <div class="slideshow-wrapper">
-                        <button class="slide-arrow prev" aria-label="Vorheriges Bild">&#10094;</button>
                         <div class="slideshow-container">
                             <!-- Slides will be inserted here by JS -->
                         </div>
+                        <button class="slide-arrow prev" aria-label="Vorheriges Bild">&#10094;</button>
                         <button class="slide-arrow next" aria-label="Nächstes Bild">&#10095;</button>
                     </div>
                     <div class="product-info-scrollable">
@@ -641,8 +642,8 @@
                 checkoutContainer: document.getElementById('checkout-container'),
                 confirmationModal: document.getElementById('confirmation-modal'),
                 toastContainer: document.getElementById('toast-container'),
-                hamburgerMenu: document.getElementById('hamburger-menu'), // NEW
-                mainNav: document.getElementById('main-nav'), // NEW
+                hamburgerMenu: document.getElementById('hamburger-menu'),
+                mainNav: document.getElementById('main-nav'),
                 templates: {
                     productCard: document.getElementById('product-card-template'),
                     productModal: document.getElementById('product-modal-template'),
@@ -655,18 +656,15 @@
             document.body.addEventListener('click', this.handleDelegatedClick.bind(this));
             document.addEventListener('keydown', this.handleKeyboard.bind(this));
             document.body.addEventListener('input', this.handleDelegatedInput.bind(this));
-            
-            // NEW: Hamburger Menu Toggle
             this.dom.hamburgerMenu.addEventListener('click', this.toggleNav.bind(this));
         },
         
-        // NEW: Hamburger Menu Toggle Logic
         toggleNav() {
             const isExpanded = this.dom.hamburgerMenu.getAttribute('aria-expanded') === 'true';
             this.dom.hamburgerMenu.setAttribute('aria-expanded', !isExpanded);
             this.dom.hamburgerMenu.classList.toggle('active');
             this.dom.mainNav.classList.toggle('active');
-            document.body.classList.toggle('modal-open', !isExpanded); // Use modal-open to prevent scrolling
+            document.body.classList.toggle('modal-open', !isExpanded);
         },
         
         handleDelegatedInput(e) {
@@ -686,34 +684,25 @@
             const target = e.target.closest('button, .modal-overlay, #nav-filters a, .dot, .payment-option');
             if (!target) return;
 
-            // Navigation
             if (target.matches('#nav-filters a')) {
                 e.preventDefault(); 
                 this.dom.navFilters.querySelector('li.active').classList.remove('active');
                 target.parentElement.classList.add('active'); 
                 this.renderProducts(target.dataset.category);
-                // NEW: Close mobile nav after clicking a link
                 if (this.dom.mainNav.classList.contains('active')) {
                     this.toggleNav();
                 }
                 return;
             }
 
-            // Modals
             if (target.matches('.learn-more-btn')) { this.openModal(document.getElementById(target.dataset.modalTarget)); return; }
             if (target.matches('#cart-icon')) { this.openModal(this.dom.cartModal); return; }
             if (target.matches('.close-btn, #close-confirmation-btn') || (target.matches('.modal-overlay') && !target.querySelector('.modal-content').contains(e.target))) { if (this.activeModal) this.closeModal(this.activeModal); return; }
-
-            // Add to Cart & Toast
             if (target.matches('.buy-btn')) { this.addToCart(target.dataset.id); this.showToast(`${this.productData[target.dataset.id].name} wurde hinzugefügt!`); return; }
             if (target.matches('.toast-cart-btn')) { if (this.activeModal) this.closeModal(this.activeModal); this.openModal(this.dom.cartModal); return; }
-            
-            // Cart Actions
             if (target.matches('#clear-cart-btn')) { this.clearCart(); return; }
             if (target.matches('.quantity-btn')) { this.updateItemQuantity(target.closest('.cart-item').dataset.id, target.dataset.action); return; }
             if (target.matches('.cart-item-remove')) { this.updateItemQuantity(target.closest('.cart-item').dataset.id, 'remove'); return; }
-            
-            // Checkout Flow
             if (target.matches('#go-to-checkout-btn')) { this.startCheckout(); return; }
             if (target.matches('#shipping-next-btn')) { this.handleCheckoutShipping(); return; }
             if (target.matches('#payment-back-btn')) { this.navigateCheckout('shipping'); return; }
@@ -721,8 +710,6 @@
             if (target.matches('.payment-option')) { this.handlePaymentSelection(target); return; }
             if (target.matches('#review-back-btn')) { this.navigateCheckout('payment'); return; }
             if (target.matches('#confirm-purchase-btn')) { this.processOrder(target); return; }
-
-            // Slideshow
             if (target.matches('.slide-arrow.next')) { this.changeSlide(this.activeModal, 1); return; }
             if (target.matches('.slide-arrow.prev')) { this.changeSlide(this.activeModal, -1); return; }
             if (target.matches('.dot')) { this.showSlide(this.activeModal, parseInt(target.dataset.slideTo, 10)); return; }
@@ -730,7 +717,6 @@
 
         handleKeyboard(e) {
             if (e.key === 'Escape' && this.activeModal) this.closeModal(this.activeModal);
-            // NEW: Close nav on escape
             if (e.key === 'Escape' && this.dom.mainNav.classList.contains('active')) this.toggleNav();
         },
 
