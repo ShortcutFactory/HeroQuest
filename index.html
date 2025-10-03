@@ -36,6 +36,9 @@
             line-height: 1.6;
             overflow-x: hidden;
         }
+        body.modal-open {
+            overflow: hidden;
+        }
 
         .container {
             width: 90%;
@@ -184,7 +187,6 @@
             border-radius: 8px;
         }
 
-        .product-content { max-width: 800px; padding: 1rem; }
         .product-info-scrollable { overflow-y: auto; padding: 1rem; }
         
         .modal-content h1, .modal-content h2 {
@@ -238,7 +240,7 @@
         .checkout-btn:hover { background-image: linear-gradient(to bottom, #6cc741, var(--success-green)); box-shadow: 0 0 15px #6cc741; }
 
         /* --- Toast Notifications --- */
-        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 90%; max-width: 400px; }
+        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 90%; max-width: 400px; pointer-events: none; }
         .toast { background-color: var(--card-bg); color: var(--text-parchment); padding: 1rem 1.5rem; border-radius: 5px; border: 2px solid var(--accent-gold); box-shadow: 0 5px 15px rgba(0,0,0,0.7); animation: toast-in 0.5s, toast-out 0.5s 2.5s; opacity: 0; text-align: center; width: 100%; }
         @keyframes toast-in { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes toast-out { from { opacity: 1; } to { opacity: 0; } }
@@ -271,7 +273,6 @@
         
         /* === MEDIA QUERIES FOR RESPONSIVENESS === */
         
-        /* Tablets and larger phones */
         @media (min-width: 600px) {
             .product-content {
                 flex-direction: row;
@@ -293,26 +294,19 @@
             }
         }
 
-        /* Small desktops and tablets in landscape */
         @media (min-width: 768px) {
             html { font-size: 17px; }
-
             .heroquest-logo { max-width: 300px; }
-
             #cart-icon { right: 30px; font-size: 3rem; }
-            
             .modal-content { max-width: 80vw; }
-
             .prev, .next { position: static; background-color: transparent; }
         }
         
-        /* Larger desktops */
         @media (min-width: 1024px) {
             html { font-size: 18px; }
             .container { padding: 0 20px; }
             .showcase-grid { gap: 3rem; }
         }
-
     </style>
 </head>
 <body>
@@ -369,7 +363,7 @@
                 <a class="prev">&#10094;</a><div class="slideshow-container"></div><a class="next">&#10095;</a>
             </div>
             <div class="product-info-scrollable">
-                 <div class="dot-container"></div>
+                <div class="dot-container"></div>
                 <h1>Der Dämonenjäger</h1>
                 <p class="description">Diese meisterhaft gefertigte Klinge bietet eine perfekte Mischung aus Angriff und Verteidigung. Ihre Stärke von drei Kampfwürfeln macht sie zu einer bedeutenden Verbesserung für jeden Helden.</p>
                 <p class="price">149,90 €</p>
@@ -384,7 +378,7 @@
                 <a class="prev">&#10094;</a><div class="slideshow-container"></div><a class="next">&#10095;</a>
             </div>
             <div class="product-info-scrollable">
-                 <div class="dot-container"></div>
+                <div class="dot-container"></div>
                 <h1>Sleeves</h1>
                 <p class="description">Diese hochwertigen Hüllen schützen deine Karten vor den Gefahren unzähliger Abenteuer. Ein Muss für jeden ernsthaften Spieler, der sein Spielmaterial in tadellosem Zustand halten will.</p>
                 <p class="price">19,90 €</p>
@@ -426,9 +420,7 @@
     <div id="checkout-modal" class="modal-overlay">
         <div class="modal-content checkout-content">
             <a class="close-btn">&times;</a>
-            <div id="checkout-container">
-                <!-- Checkout steps will be rendered here by JavaScript -->
-            </div>
+            <div id="checkout-container"></div>
         </div>
     </div>
 
@@ -444,12 +436,10 @@
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
     <div id="toast-container"></div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // === DATA & STATE MANAGEMENT ===
         const productData = {
             "demonhunter-page": { images: ["Assets/Download.png", "Assets/IMG_8256.png", "Assets/IMG_8252.png"] },
             "sleeves-page": { images: ["1658229357379281.webp", "https://place-hold.it/500x400/4a362a/eaddc0&text=Ansicht+2", "https://place-hold.it/500x400/4a362a/eaddc0&text=Detailansicht"] },
@@ -457,39 +447,36 @@
         };
 
         let cart = [];
-        let checkoutState = {
-            step: 'shipping',
-            shippingInfo: {},
-            paymentMethod: ''
-        };
+        let checkoutState = { step: 'shipping', shippingInfo: {}, paymentMethod: '' };
 
-        // === INITIALIZATION ===
         initializeSlideshows();
         loadCartFromStorage();
         addGlobalEventListeners();
 
-        // === SLIDESHOW & PRODUCT MODAL LOGIC ===
         function initializeSlideshows() {
             document.querySelectorAll('.product-modal').forEach(modal => {
                 const productId = modal.id;
-                if (productData[productId]) {
-                    const slideContainer = modal.querySelector('.slideshow-container');
-                    const dotContainer = modal.querySelector('.dot-container');
-                    slideContainer.innerHTML = ''; // Clear existing
-                    dotContainer.innerHTML = '';   // Clear existing
-                    productData[productId].images.forEach((imgUrl, index) => {
-                        slideContainer.innerHTML += `<div class="mySlides"><img src="${imgUrl}" alt="Produktbild ${index + 1}"></div>`;
-                        dotContainer.innerHTML += `<span class="dot" data-slide-to="${index + 1}"></span>`;
-                    });
-                }
+                if (!productData[productId]) return;
+
+                const slideContainer = modal.querySelector('.slideshow-container');
+                const dotContainer = modal.querySelector('.dot-container');
+                slideContainer.innerHTML = '';
+                dotContainer.innerHTML = '';
+
+                productData[productId].images.forEach((imgUrl, index) => {
+                    slideContainer.innerHTML += `<div class="mySlides"><img src="${imgUrl}" alt="Produktbild ${index + 1}"></div>`;
+                    dotContainer.innerHTML += `<span class="dot" data-slide-to="${index + 1}"></span>`;
+                });
             });
         }
 
         function showSlide(modal, index) {
             const slides = modal.querySelectorAll('.mySlides');
             const dots = modal.querySelectorAll('.dot');
-            if(slides.length === 0) return;
             
+            // **FIX**: Prevents script-halting error if slides/dots don't exist yet.
+            if (slides.length === 0) return;
+
             if (index > slides.length) index = 1;
             if (index < 1) index = slides.length;
             
@@ -507,11 +494,20 @@
             showSlide(modal, currentIndex + direction);
         }
 
-        // === EVENT HANDLING ===
         function addGlobalEventListeners() {
             document.querySelectorAll('.learn-more-btn').forEach(btn => btn.addEventListener('click', openModal));
-            document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closeModal));
+            
+            // Use event delegation for closing modals, also allows closing by clicking the background
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', e => {
+                    if (e.target === modal || e.target.classList.contains('close-btn')) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
             document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', handleAddToCartClick));
+            
             document.querySelectorAll('.product-modal').forEach(modal => {
                 modal.addEventListener('click', e => {
                     if (e.target.matches('.next')) changeSlide(modal, 1);
@@ -520,29 +516,37 @@
                 });
             });
             
-            document.getElementById('cart-icon').addEventListener('click', () => document.getElementById('cart-modal').classList.add('active'));
+            document.getElementById('cart-icon').addEventListener('click', () => {
+                 document.getElementById('cart-modal').classList.add('active');
+                 document.body.classList.add('modal-open');
+            });
             document.getElementById('clear-cart-btn').addEventListener('click', clearCart);
             document.getElementById('go-to-checkout-btn').addEventListener('click', startCheckout);
-            document.getElementById('close-confirmation-btn').addEventListener('click', () => document.getElementById('confirmation-modal').classList.remove('active'));
+            document.getElementById('close-confirmation-btn').addEventListener('click', () => closeModal(document.getElementById('confirmation-modal')));
         }
 
         function openModal(e) {
-            const targetId = e.target.dataset.target;
-            if (targetId) {
-                const modal = document.getElementById(targetId);
+            // **FIX**: Prevents the browser's default behavior for <a> tags.
+            e.preventDefault();
+            const targetId = e.currentTarget.dataset.target;
+            const modal = document.getElementById(targetId);
+            if (modal) {
                 modal.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                document.body.classList.add('modal-open');
                 showSlide(modal, 1);
             }
         }
 
-        function closeModal(e) {
-            e.target.closest('.modal-overlay').classList.remove('active');
-            document.body.style.overflow = ''; // Restore background scrolling
+        function closeModal(modal) {
+            modal.classList.remove('active');
+            // Only remove the class if no other modals are active
+            if (document.querySelectorAll('.modal-overlay.active').length === 0) {
+                 document.body.classList.remove('modal-open');
+            }
         }
 
         function handleAddToCartClick(e) {
-            const product = e.target.dataset;
+            const product = e.currentTarget.dataset;
             const existingItem = cart.find(item => item.id === product.id);
             if (existingItem) {
                 existingItem.quantity++;
@@ -553,7 +557,6 @@
             showToast(`${product.name} wurde in den Warenkorb gelegt!`);
         }
 
-        // === CART LOGIC ===
         function updateCart() {
             renderCartItems();
             updateCartCounter();
@@ -564,12 +567,13 @@
         function renderCartItems() {
             const cartItemsList = document.getElementById('cart-items-list');
             cartItemsList.innerHTML = '';
+            document.getElementById('go-to-checkout-btn').disabled = cart.length === 0;
+
             if (cart.length === 0) {
                 cartItemsList.innerHTML = '<li>Dein Warenkorb ist leer.</li>';
-                document.getElementById('go-to-checkout-btn').disabled = true;
                 return;
             }
-            document.getElementById('go-to-checkout-btn').disabled = false;
+            
             cart.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'cart-item';
@@ -593,23 +597,22 @@
             document.querySelectorAll('.cart-item-remove').forEach(btn => btn.addEventListener('click', handleRemoveItem));
         }
 
-        const handleQuantityChange = e => updateItemQuantity(e.target.dataset.id, e.target.dataset.action);
-        const handleQuantityInputChange = e => updateItemQuantity(e.target.dataset.id, 'set', parseInt(e.target.value));
-        const handleRemoveItem = e => updateItemQuantity(e.target.dataset.id, 'remove');
+        const handleQuantityChange = e => updateItemQuantity(e.currentTarget.dataset.id, e.currentTarget.dataset.action);
+        const handleQuantityInputChange = e => updateItemQuantity(e.currentTarget.dataset.id, 'set', parseInt(e.currentTarget.value));
+        const handleRemoveItem = e => updateItemQuantity(e.currentTarget.dataset.id, 'remove');
         
         function updateItemQuantity(id, action, value = null) {
             const itemIndex = cart.findIndex(i => i.id === id);
             if (itemIndex === -1) return;
-            const item = cart[itemIndex];
 
             switch (action) {
-                case 'increase': item.quantity++; break;
-                case 'decrease': item.quantity = Math.max(0, item.quantity - 1); break;
-                case 'set': if (value > 0) item.quantity = value; else item.quantity = 0; break;
-                case 'remove': item.quantity = 0; break;
+                case 'increase': cart[itemIndex].quantity++; break;
+                case 'decrease': cart[itemIndex].quantity--; break;
+                case 'set': if (value > 0) cart[itemIndex].quantity = value; break;
+                case 'remove': cart[itemIndex].quantity = 0; break;
             }
 
-            if (item.quantity <= 0) cart.splice(itemIndex, 1);
+            if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
             updateCart();
         }
         
@@ -632,7 +635,6 @@
             }
         }
 
-        // === LOCAL STORAGE PERSISTENCE ===
         function saveCartToStorage() {
             localStorage.setItem('heroquestCart', JSON.stringify(cart));
         }
@@ -645,18 +647,19 @@
             }
         }
 
-        // === CHECKOUT LOGIC ===
         function startCheckout() {
             if (cart.length === 0) return;
-            document.getElementById('cart-modal').classList.remove('active');
-            document.getElementById('checkout-modal').classList.add('active');
+            closeModal(document.getElementById('cart-modal'));
+            const checkoutModal = document.getElementById('checkout-modal');
+            checkoutModal.classList.add('active');
+            document.body.classList.add('modal-open');
             checkoutState.step = 'shipping';
             renderCheckoutStep();
         }
 
         function renderCheckoutStep() {
             const container = document.getElementById('checkout-container');
-            container.innerHTML = ''; // Clear previous step
+            container.innerHTML = '';
             switch (checkoutState.step) {
                 case 'shipping': container.innerHTML = getShippingHTML(); addShippingListeners(); break;
                 case 'payment': container.innerHTML = getPaymentHTML(); addPaymentListeners(); break;
@@ -758,8 +761,10 @@
             btn.textContent = 'Verarbeite...';
             
             setTimeout(() => {
-                document.getElementById('checkout-modal').classList.remove('active');
-                document.getElementById('confirmation-modal').classList.add('active');
+                closeModal(document.getElementById('checkout-modal'));
+                const confirmationModal = document.getElementById('confirmation-modal');
+                confirmationModal.classList.add('active');
+                document.body.classList.add('modal-open');
                 document.getElementById('confirmation-order-id').textContent = `HQ-${Date.now()}`;
                 cart = [];
                 updateCart();
@@ -774,10 +779,7 @@
             toast.className = 'toast';
             toast.textContent = message;
             toastContainer.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 500);
-            }, 2500);
+            setTimeout(() => toast.remove(), 3000);
         }
     });
     </script>
