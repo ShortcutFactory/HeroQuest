@@ -42,7 +42,6 @@ app.post('/create-checkout-session', async (req, res) => {
     }));
     console.log('Creating Stripe session...');
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       success_url: `https://shadowquest.shop/?payment=success`, 
