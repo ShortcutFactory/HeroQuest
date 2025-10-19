@@ -46,6 +46,7 @@ app.post('/create-checkout-session', async (req, res) => {
       mode: 'payment',
       success_url: `https://shadowquest.shop/?payment=success`, 
       cancel_url: `https://shadowquest.shop/?payment=cancelled`, 
+      payment_method_types: ['card', 'klarna', 'sofort', 'giropay', 'sepa_debit'],
     });
     console.log('Stripe session created successfully. ID:', session.id);
     res.json({ id: session.id });
