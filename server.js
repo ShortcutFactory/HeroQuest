@@ -7,7 +7,7 @@ const cors = require('cors');
 const app = express();
 
 // Allow your GitHub Pages site to talk to this server
-app.use(cors({ origin: 'https://shortcutfactory.github.io' }));
+app.use(cors({ origin: ['https://shortcutfactory.github.io', 'https://shadowquest.shop'] }));
 app.use(express.json());
 
 app.post('/create-checkout-session', async (req, res) => {
