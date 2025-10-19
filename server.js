@@ -1,23 +1,39 @@
-// --- FINAL server.js ---
+// --- FINAL DEBUGGING server.js ---
+console.log('---------------------------------');
+console.log('Server process starting...');
+
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); 
 const cors = require('cors');
+console.log('Express and CORS modules loaded.');
+
+// --- Step 1: Check for the Secret Key BEFORE using it ---
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+if (!stripeSecretKey) {
+  console.error('FATAL ERROR: STRIPE_SECRET_KEY environment variable not found!');
+  process.exit(1); // Exit the process with an error code
+}
+console.log('Stripe secret key found.');
+
+const stripe = require('stripe')(stripeSecretKey);
+console.log('Stripe module initialized successfully.');
 
 const app = express();
 
-// --- More Robust CORS Configuration ---
-// This explicitly lists the domains that are allowed to make requests.
+// --- More Robust CORS Configuration with Logging ---
 const allowedOrigins = [
     'https://shortcutfactory.github.io', 
     'https://shadowquest.shop'
 ];
+console.log('Allowed CORS origins:', allowedOrigins);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests from the allowed origins
+    console.log(`CORS Check: Request received from origin: ${origin}`);
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      console.log('CORS Check Passed: Origin is allowed.');
       callback(null, true);
     } else {
+      console.error(`CORS Check Failed: Origin ${origin} is NOT allowed.`);
       callback(new Error('Not allowed by CORS'));
     }
   }
@@ -25,17 +41,19 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+console.log('CORS and express.json middleware configured.');
 
-// --- New Test Endpoint ---
-// You can now visit https://heroquest-2wvl.onrender.com/ to see if the server is live.
+// --- Test Endpoint ---
 app.get('/', (req, res) => {
-  res.send('HeroQuest Server is live and running!');
+  console.log('GET /: Test endpoint was hit.');
+  res.send('HeroQuest Server is live and running! CORS is configured.');
 });
 
-
 app.post('/create-checkout-session', async (req, res) => {
+  console.log('POST /create-checkout-session: Endpoint hit.');
   try {
     const { cart } = req.body;
+    console.log('Received cart with', cart.length, 'items.');
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
         return res.status(400).json({ error: 'Cart is empty or invalid.' });
     }
@@ -43,21 +61,26 @@ app.post('/create-checkout-session', async (req, res) => {
       price_data: { currency: 'eur', product_data: { name: item.name }, unit_amount: Math.round(item.price * 100) },
       quantity: item.quantity,
     }));
+    console.log('Creating Stripe session...');
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
-      // --- CORRECTED URLs ---
-      // This now correctly redirects users back to your live domain.
       success_url: `https://shadowquest.shop/?payment=success`, 
       cancel_url: `https://shadowquest.shop/?payment=cancelled`, 
     });
+    console.log('Stripe session created successfully. ID:', session.id);
     res.json({ id: session.id });
   } catch (error) {
-    console.error('Stripe API Error:', error.message);
+    console.error('--- STRIPE API ERROR ---');
+    console.error(error);
     res.status(500).json({ error: 'Internal server error.' });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is now listening on port ${PORT}`);
+  console.log('Application started successfully!');
+  console.log('---------------------------------');
+});
