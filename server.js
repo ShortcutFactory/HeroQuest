@@ -1,14 +1,37 @@
-// --- Paste this code into server.js ---
+// --- FINAL server.js ---
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); 
-const path = require('path');
 const cors = require('cors');
 
 const app = express();
 
-// Allow your GitHub Pages site to talk to this server
-app.use(cors({ origin: ['https://shortcutfactory.github.io', 'https://shadowquest.shop'] }));
+// --- More Robust CORS Configuration ---
+// This explicitly lists the domains that are allowed to make requests.
+const allowedOrigins = [
+    'https://shortcutfactory.github.io', 
+    'https://shadowquest.shop'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests from the allowed origins
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// --- New Test Endpoint ---
+// You can now visit https://heroquest-2wvl.onrender.com/ to see if the server is live.
+app.get('/', (req, res) => {
+  res.send('HeroQuest Server is live and running!');
+});
+
 
 app.post('/create-checkout-session', async (req, res) => {
   try {
@@ -24,9 +47,10 @@ app.post('/create-checkout-session', async (req, res) => {
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
-      // Make sure this URL is correct for your GitHub pages site
-      success_url: `https://shortcutfactory.github.io/HeroQuest/?payment=success`, 
-      cancel_url: `https://shortcutfactory.github.io/HeroQuest/?payment=cancelled`, 
+      // --- CORRECTED URLs ---
+      // This now correctly redirects users back to your live domain.
+      success_url: `https://shadowquest.shop/?payment=success`, 
+      cancel_url: `https://shadowquest.shop/?payment=cancelled`, 
     });
     res.json({ id: session.id });
   } catch (error) {
