@@ -79,6 +79,29 @@
 
         /*
         ==========================================================================
+        CONSTRUCTION BANNER
+        ==========================================================================
+        */
+        #construction-banner {
+            background-color: var(--accent-gold);
+            color: var(--bg-dark-stone);
+            text-align: center;
+            padding: 0.6rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 501; /* Higher than header's z-index */
+            border-bottom: 1px solid var(--border-dark);
+        }
+        #construction-banner p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            font-weight: bold;
+            text-shadow: none;
+        }
+
+        /*
+        ==========================================================================
         HEADER & NAVIGATION
         ==========================================================================
         */
@@ -87,7 +110,7 @@
             border-bottom: 2px solid var(--border-dark);
             background-color: rgba(0,0,0,0.4);
             position: sticky;
-            top: 0;
+            top: 0; /* This will be dynamically adjusted by JavaScript */
             z-index: 500;
             backdrop-filter: blur(8px);
         }
@@ -441,6 +464,18 @@
     </style>
 </head>
 <body>
+    <!-- ========================================================================== -->
+    <!--                        WEBSITE UNDER CONSTRUCTION BANNER                       -->
+    <!-- ========================================================================== -->
+    <div id="construction-banner">
+        <p>
+            <strong>DE:</strong> Diese Webseite befindet sich noch im Aufbau. Es können noch Fehler auftreten. Bestellungen sind erst ab dem 26. Oktober möglich. Vielen Dank für Ihr Verständnis!
+            <br>
+            <strong>EN:</strong> This website is under construction. Some errors may still occur. Orders are possible starting from October 26th. Thank you for your understanding!
+        </p>
+    </div>
+    <!-- End of Banner -->
+
     <header>
         <div class="container">
             <div class="header-content">
@@ -946,7 +981,23 @@
         }
     };
 
-    document.addEventListener('DOMContentLoaded', () => App.init());
+    document.addEventListener('DOMContentLoaded', () => {
+        // Adjust header position based on construction banner height
+        const banner = document.getElementById('construction-banner');
+        const header = document.querySelector('header');
+        
+        const adjustHeaderTop = () => {
+            if (banner && header) {
+                const bannerHeight = banner.offsetHeight;
+                header.style.top = `${bannerHeight}px`;
+            }
+        };
+
+        adjustHeaderTop(); // Run on initial load
+        window.addEventListener('resize', adjustHeaderTop); // Rerun on window resize
+
+        App.init(); // Initialize the rest of the application
+    });
     </script>
 </body>
 </html>
