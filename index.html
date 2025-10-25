@@ -126,6 +126,7 @@
             height: auto;
             filter: drop-shadow(0 4px 15px rgba(0,0,0,0.8)) drop-shadow(0 0 12px var(--glow-gold));
             z-index: 1002;
+            transition: max-width 0.3s ease;
         }
         
         .main-nav ul {
@@ -147,7 +148,7 @@
         }
         
         .hamburger-menu { display: none; }
-        .nav-right-cluster { display: flex; align-items: center; gap: var(--spacing-md); }
+        .nav-right-cluster { display: flex; align-items: center; gap: var(--spacing-md); transition: gap 0.3s ease; }
         
         /* Language Switcher Styles */
         .language-switcher {
@@ -179,7 +180,7 @@
 
         #cart-icon-wrapper { position: relative; }
         .header-icon {
-            font-size: 1.8rem; color: var(--accent-gold); cursor: pointer; transition: color 0.3s, transform 0.3s, box-shadow 0.3s;
+            font-size: 1.8rem; color: var(--accent-gold); cursor: pointer; transition: all 0.3s;
             background: var(--card-bg); border: 2px solid var(--border-dark);
             padding: var(--spacing-sm); border-radius: var(--border-radius);
             display: flex; align-items: center; justify-content: center;
@@ -243,6 +244,7 @@
             align-items: center;
             justify-content: center;
             padding: var(--spacing-sm);
+            position: relative;
         }
         .showcase-item img {
             max-width: 100%;
@@ -257,6 +259,32 @@
         }
         .showcase-item h3 { font-size: clamp(1.25rem, 5vw, 1.5rem); }
         .showcase-item p { flex-grow: 1; min-height: 40px; }
+
+        .price-container {
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-gold);
+            min-height: 2.5rem; /* Reserve space to prevent layout shifts */
+        }
+        .original-price {
+            font-size: 1rem;
+            text-decoration: line-through;
+            opacity: 0.6;
+            margin-right: var(--spacing-sm);
+        }
+        .sale-badge {
+            position: absolute;
+            top: var(--spacing-md);
+            left: var(--spacing-md);
+            background-color: var(--error-red);
+            color: var(--text-light);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 1px solid var(--border-dark);
+        }
 
         /*
         ==========================================================================
@@ -292,6 +320,8 @@
         .product-content .modal-body { padding: 0; background: transparent; }
         .product-info-scrollable { padding: var(--spacing-lg); text-align: center; }
         .product-info-scrollable h1 { font-size: 1.8rem; }
+        .product-info-scrollable .price-container { font-size: 1.8rem; }
+        .product-info-scrollable .original-price { font-size: 1.2rem; }
 
         /* Slideshow */
         .slideshow-wrapper { position: relative; display: flex; align-items: center; justify-content: center; padding: var(--spacing-md) 0; }
@@ -489,6 +519,23 @@
                 margin: 0 auto;
             }
         }
+        
+        @media (max-width: 480px) {
+            .heroquest-logo {
+                max-width: 120px;
+            }
+            .nav-right-cluster {
+                gap: var(--spacing-sm);
+            }
+            .header-icon {
+                padding: var(--spacing-xs);
+            }
+             .header-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -613,6 +660,7 @@
             <div class="showcase-item__content">
                <h3 class="name"></h3>
                <p class="subtitle"></p>
+               <div class="price-container"></div>
                <button class="btn btn-primary learn-more-btn" data-translate-key="product_details_btn">Details & Kaufen</button>
             </div>
         </div>
@@ -632,7 +680,7 @@
                         <div class="dot-container"></div>
                         <h1 class="name"></h1>
                         <p class="description"></p>
-                        <p class="price" style="font-size: 1.5rem; font-weight: bold; color: var(--accent-gold);"></p>
+                        <div class="price-container"></div>
                     </div>
                 </div>
                  <div class="modal-footer" style="justify-content: center;">
@@ -691,6 +739,7 @@
                 toast_view_cart_btn: "Warenkorb ansehen",
                 toast_payment_cancelled: "Die Zahlung wurde abgebrochen.",
                 no_products_found: "Keine Produkte in dieser Kategorie gefunden.",
+                sale_badge: "{percent}% RABATT",
                 aria_open_cart: "Warenkorb öffnen",
                 aria_open_nav: "Navigation öffnen",
                 aria_close: "Schließen",
@@ -729,6 +778,7 @@
                 toast_view_cart_btn: "View Cart",
                 toast_payment_cancelled: "The payment was cancelled.",
                 no_products_found: "No products found in this category.",
+                sale_badge: "{percent}% OFF",
                 aria_open_cart: "Open shopping cart",
                 aria_open_nav: "Open navigation",
                 aria_close: "Close",
@@ -748,7 +798,8 @@
                 name: { de: "Der Dämonenjäger", en: "The Demon Hunter" },
                 subtitle: { de: "Fanmade Hero Collection aus 2 Helden", en: "Fanmade Hero Collection of 2 Heroes" },
                 description: { de: "Zwei detailreiche Miniaturen des Dämonenjägers, bereit, sich den Mächten des Chaos entgegenzustellen. Unbemalt geliefert.", en: "Two detailed miniatures of the Demon Hunter, ready to face the forces of Chaos. Delivered unpainted." },
-                price: 129.90,
+                originalPrice: 159.90,
+                discountPrice: 139.90,
                 img: "Assets/Download.png",
                 images: ["Assets/Download.png", "Assets/IMG_8256.png", "Assets/IMG_8252.png"],
                 category: "neues"
@@ -757,16 +808,17 @@
                 name: { de: "Die Hexe", en: "The Witch" },
                 subtitle: { de: "Fanmade Hero Collection aus 2 Helden", en: "Fanmade Hero Collection of 2 Heroes" },
                 description: { de: "Zwei exquisite Miniaturen der Hexe, meisterhaft in ihren arkanen Künsten. Perfekt für jede Heldengruppe. Unbemalt geliefert.", en: "Two exquisite miniatures of the Witch, masters of their arcane arts. Perfect for any group of heroes. Delivered unpainted." },
-                price: 129.90,
+                originalPrice: 159.90,
+                discountPrice: 139.90,
                 img: "Assets/Download.png",
                 images: ["Assets/Download.png", "https://place-hold.it/500x400/1a1410/eaddc0&text=View+2", "https://place-hold.it/500x400/1a1410/eaddc0&text=Detail+View"],
                 category: "neues"
             },
-            "potion": {
+            "ranger": {
                 name: { de: "Der Waldläufer", en: "The Ranger" },
                 subtitle: { de: "Fanmade Hero Collection aus 2 Helden", en: "Fanmade Hero Collection of 2 Heroes" },
                 description: { de: "Ein geschickter Jäger und Überlebenskünstler. Diese beiden Miniaturen stellen den Waldläufer in dynamischen Posen dar. Unbemalt geliefert.", en: "A skilled hunter and survivalist. These two miniatures depict the Ranger in dynamic poses. Delivered unpainted." },
-                price: 1.00,
+                originalPrice: 159.90,
                 img: "https://place-hold.it/300x200/110e0c/eaddc0&text=Ranger",
                 images: ["https://place-hold.it/500x400/110e0c/eaddc0&text=Ranger"],
                 category: "neues"
@@ -775,7 +827,8 @@
                 name: { de: "Chaos-Krieger Set", en: "Chaos Warrior Set" },
                 subtitle: { de: "2 alternative Resin-Miniaturen", en: "2 alternative Resin Miniatures" },
                 description: { de: "Bringe Abwechslung in deine Dungeons mit diesen alternativen Posen für Chaos-Krieger. Gegossen in detailreichem Resin. Unbemalt geliefert.", en: "Bring variety to your dungeons with these alternative poses for Chaos Warriors. Cast in detailed resin. Delivered unpainted." },
-                price: 0.50,
+                originalPrice: 1.00,
+                discountPrice: 0.50,
                 img: "https://place-hold.it/300x200/110e0c/eaddc0&text=Warrior",
                 images: ["https://place-hold.it/500x400/110e0c/eaddc0&text=Warrior", "https://place-hold.it/500x400/1a1410/eaddc0&text=View+2"],
                 category: "angebote"
@@ -784,7 +837,8 @@
                 name: { de: "Premium Card Sleeves", en: "Premium Card Sleeves" },
                 subtitle: { de: "100 Stk. für alle Karten", en: "100 pcs. for all cards" },
                 description: { de: "Schütze deine wertvollen Spielkarten vor Abnutzung mit diesen passgenauen Premium-Sleeves in matter Ausführung.", en: "Protect your valuable game cards from wear and tear with these custom-fit premium sleeves in a matte finish." },
-                price: 19.90,
+                originalPrice: 29.90,
+                discountPrice: 19.90,
                 img: "1658229357379281.webp",
                 images: ["1658229357379281.webp"],
                 category: "zubehoer"
@@ -927,6 +981,18 @@
             this.dom.mainNav.classList.toggle('active');
             document.body.classList.toggle('modal-open', !isExpanded);
         },
+        
+        getPriceHTML(product) {
+            const formatPrice = (price) => `${price.toFixed(2).replace('.',',')} €`;
+            if (product.discountPrice && product.discountPrice < product.originalPrice) {
+                 return `
+                    <span class="original-price">${formatPrice(product.originalPrice)}</span>
+                    <span class="discounted-price">${formatPrice(product.discountPrice)}</span>
+                `;
+            } else {
+                return `<span>${formatPrice(product.originalPrice)}</span>`;
+            }
+        },
 
         renderProducts(category) {
             this.dom.showcaseGrid.innerHTML = '';
@@ -942,10 +1008,23 @@
                 // Render Card
                 const cardTpl = this.dom.templates.productCard.content.cloneNode(true);
                 const translatedName = product.name[this.currentLanguage];
-                cardTpl.querySelector('img').src = product.img;
-                cardTpl.querySelector('img').alt = translatedName;
+                const imageContainer = cardTpl.querySelector('.showcase-item__image-container');
+                imageContainer.querySelector('img').src = product.img;
+                imageContainer.querySelector('img').alt = translatedName;
+                
+                // Discount Badge
+                if (product.discountPrice && product.discountPrice < product.originalPrice) {
+                    const percentage = Math.round(((product.originalPrice - product.discountPrice) / product.originalPrice) * 100);
+                    const saleText = this.translations[this.currentLanguage].sale_badge.replace('{percent}', percentage);
+                    const saleBadge = document.createElement('div');
+                    saleBadge.className = 'sale-badge';
+                    saleBadge.textContent = saleText;
+                    imageContainer.appendChild(saleBadge);
+                }
+                
                 cardTpl.querySelector('.name').textContent = translatedName;
                 cardTpl.querySelector('.subtitle').textContent = product.subtitle[this.currentLanguage];
+                cardTpl.querySelector('.price-container').innerHTML = this.getPriceHTML(product);
                 cardTpl.querySelector('button').dataset.modalTarget = `${id}-modal`;
                 this.dom.showcaseGrid.appendChild(cardTpl);
                 
@@ -961,7 +1040,7 @@
                 });
                 modalEl.querySelector('.name').textContent = translatedName;
                 modalEl.querySelector('.description').textContent = product.description[this.currentLanguage];
-                modalEl.querySelector('.price').textContent = `${product.price.toFixed(2).replace('.',',')} €`;
+                modalEl.querySelector('.price-container').innerHTML = this.getPriceHTML(product);
                 modalEl.querySelector('.buy-btn').dataset.id = id;
                 this.dom.modalContainer.appendChild(modalTpl);
             });
@@ -1022,7 +1101,8 @@
                 existingItem.quantity++;
             } else {
                 const product = this.productData[id];
-                this.cart.push({ id, name: product.name, price: product.price, img: product.img, quantity: 1 });
+                const price = product.discountPrice && product.discountPrice < product.originalPrice ? product.discountPrice : product.originalPrice;
+                this.cart.push({ id, name: product.name, price: price, img: product.img, quantity: 1 });
             }
             this.showToast('toast_item_added', { itemName: this.productData[id].name[this.currentLanguage] });
             this.updateCartUI();
