@@ -21,7 +21,6 @@ const app = express();
 // --- FINAL, MORE PERMISSIVE CORS SETUP ---
 // This configuration is very robust and should resolve any network-level interference.
 app.use(cors());
-
 app.use(express.json());
 console.log('CORS and express.json middleware configured.');
 
@@ -31,22 +30,30 @@ app.get('/', (req, res) => {
   res.send('HeroQuest Server is live and running! CORS is configured.');
 });
 
+// --- Stripe Checkout Endpoint ---
 app.post('/create-checkout-session', async (req, res) => {
   console.log('POST /create-checkout-session: Endpoint hit.');
   try {
     const { cart } = req.body;
     console.log('Received cart with', cart.length, 'items.');
+
     const line_items = cart.map(item => ({
-      price_data: { currency: 'eur', product_data: { name: item.name }, unit_amount: Math.round(item.price * 100) },
+      price_data: {
+        currency: 'eur',
+        product_data: { name: item.name },
+        unit_amount: Math.round(item.price * 100),
+      },
       quantity: item.quantity,
     }));
+
     console.log('Creating Stripe session...');
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: 'payment',
-      success_url: `https://shadowquest.shop/?payment=success`, 
-      cancel_url: `https://shadowquest.shop/?payment=cancelled`, 
+      success_url: `https://shadowquest.shop/?payment=success`,
+      cancel_url: `https://shadowquest.shop/?payment=cancelled`,
     });
+
     console.log('Stripe session created successfully. ID:', session.id);
     res.json({ id: session.id });
   } catch (error) {
@@ -56,6 +63,14 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
+// --- Health Check Endpoint (Keep-Alive Ping) ---
+app.get('/healthz', (req, res) => {
+  // Respond instantly with plain text
+  res.set('Connection', 'close');
+  res.status(200).send('OK');
+});
+
+// --- Start Server ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is now listening on port ${PORT}`);
