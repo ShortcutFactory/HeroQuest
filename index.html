@@ -724,8 +724,8 @@
                 checkout_pay_btn: "Sicher mit Stripe bezahlen",
                 checkout_redirecting_btn: "Leite zu Stripe weiter...",
                 checkout_shipping: "Versand",
-                checkout_shipping_de: "Deutschland (6,19 €)",
-                checkout_shipping_int: "International (26,49 €)",
+                checkout_shipping_de: "Versand (Deutschland)",
+                checkout_shipping_int: "Versand (International)",
                 checkout_subtotal: "Zwischensumme",
                 checkout_grand_total: "Gesamtsumme",
                 confirm_title: "Bestellung erfolgreich!",
@@ -768,8 +768,8 @@
                 checkout_pay_btn: "Pay securely with Stripe",
                 checkout_redirecting_btn: "Redirecting to Stripe...",
                 checkout_shipping: "Shipping",
-                checkout_shipping_de: "Germany (€6.19)",
-                checkout_shipping_int: "International (€26.49)",
+                checkout_shipping_de: "Shipping (Germany)",
+                checkout_shipping_int: "Shipping (International)",
                 checkout_subtotal: "Subtotal",
                 checkout_grand_total: "Grand Total",
                 confirm_title: "Order Successful!",
@@ -840,8 +840,8 @@
                 description: { de: "Tauchen Sie ein in die Welt von HeroQuest und entdecken Sie Drok-Mar, den rebellischen Ork, der sich in die Sammlung exklusiver Fanmade Charaktere einreiht. Dieser markenlose Miniaturheld besticht durch seine detailreiche Gestaltung und ist ein Muss für Sammler und Spieler, die ihre Decks mit außergewöhnlichen Figuren bereichern möchten. Ideal für Rollenspiele und Tabletop-Schlachten, ist Drok-Mar bereit, sich Ihren Abenteuern anzuschließen und mit seiner unverwechselbaren Persönlichkeit und Kraft zu beeindrucken. Achtung ⚠️ Lieferzeit ca. 10 Tage.", en: "Immerse yourself in the world of HeroQuest and discover Drok-Mar, the rebellious orc who joins the collection of exclusive fan-made characters. This unbranded miniature hero stands out with its detailed design and is a must-have for collectors and players looking to enhance their decks with extraordinary figures. Perfect for role-playing and tabletop battles, Drok-Mar is ready to join your adventures and impress with his unique personality and strength. ⚠️ Please note: delivery time approximately 10 days." },
                 originalPrice: 99.90,
                 discountPrice: 65.90,
-                img: "https://img.kleinanzeigen.de/api/v1/prod-ads/images/cd/cd39df20-7820-4a23-845d-9f8df4fc7ca0?rule=$_59.AUTO",
-                images: ["https://img.kleinanzeigen.de/api/v1/prod-ads/images/cd/cd39df20-7820-4a23-845d-9f8df4fc7ca0?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/bc/bc972e09-790c-4f19-8599-73de88a80c30?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/72/72d35243-d64d-4f6e-bdc9-0e6f6647f725?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/34/34862c49-eda2-477d-8d0b-11d64fd41142?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/53/5364469b-148b-41a9-ba97-b93259519356?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/a6/a6b396d6-c1ff-4e79-9896-efc175f0b9ef?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/43/43599ab0-825e-4c7f-9073-b560ba0e500f?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/51/512e4a38-603d-4391-8ff2-3e1dfd297427?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/84/8415a4c1-8046-4815-90f6-017a9cf3ac44?rule=$_59.AUTO"],
+                img: "https://img.kleinanzeigen.de/api/v1/prod-ads/images/cd/cd3similique-7820-4a23-845d-9f8df4fc7ca0?rule=$_59.AUTO",
+                images: ["https://img.kleinanzeigen.de/api/v1/prod-ads/images/cd/cd3similique-7820-4a23-845d-9f8df4fc7ca0?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/bc/bc972e09-790c-4f19-8599-73de88a80c30?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/72/72d35243-d64d-4f6e-bdc9-0e6f6647f725?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/34/34862c49-eda2-477d-8d0b-11d64fd41142?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/53/5364469b-148b-41a9-ba97-b93259519356?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/a6/a6b396d6-c1ff-4e79-9896-efc175f0b9ef?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/43/43599ab0-825e-4c7f-9073-b560ba0e500f?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/51/512e4a38-603d-4391-8ff2-3e1dfd297427?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/84/8415a4c1-8046-4815-90f6-017a9cf3ac44?rule=$_59.AUTO"],
                 category: "neues"
             }
         },
@@ -1210,11 +1210,11 @@
                         <div id="shipping-options">
                             <label style="display: block; cursor:pointer; margin-bottom: 0.5rem;">
                                 <input type="radio" name="shipping-option" value="de" data-cost="6.19" checked>
-                                ${this.translations[lang].checkout_shipping_de}
+                                ${this.translations[lang].checkout_shipping_de} (6,19 €)
                             </label>
                             <label style="display: block; cursor:pointer;">
                                 <input type="radio" name="shipping-option" value="int" data-cost="26.49">
-                                ${this.translations[lang].checkout_shipping_int}
+                                ${this.translations[lang].checkout_shipping_int} (26,49 €)
                             </label>
                         </div>
                     </div>
@@ -1251,10 +1251,29 @@
             btn.textContent = this.translations[this.currentLanguage].checkout_redirecting_btn;
 
             const selectedShippingEl = document.querySelector('input[name="shipping-option"]:checked');
-            const shippingDetails = selectedShippingEl ? {
-                name: selectedShippingEl.value === 'de' ? this.translations['en'].checkout_shipping_de : this.translations['en'].checkout_shipping_int,
-                cost: parseFloat(selectedShippingEl.dataset.cost)
-            } : null;
+            
+            // Create a temporary cart that includes the shipping cost as a line item
+            const cartForStripe = this.cart.map(item => ({
+                id: item.id,
+                name: item.name.en, // Use English name for Stripe
+                price: item.price,
+                quantity: item.quantity
+            }));
+
+            if (selectedShippingEl) {
+                const shippingCost = parseFloat(selectedShippingEl.dataset.cost);
+                const shippingName = selectedShippingEl.value === 'de' 
+                    ? this.translations['en'].checkout_shipping_de // "Shipping (Germany)"
+                    : this.translations['en'].checkout_shipping_int; // "Shipping (International)"
+
+                // Add shipping as a new item to the cart array being sent to the backend
+                cartForStripe.push({
+                    id: 'shipping-' + selectedShippingEl.value,
+                    name: shippingName,
+                    price: shippingCost,
+                    quantity: 1
+                });
+            }
 
             const publicKey = 'pk_live_51SJvzbEIjtsqLIkTq3luQQKQjdDV5TNRQrUH33xsSkxLn2kbBYpl0KI06Xa5hMeXzSeOAH8tQ0kpIiFKn8yV6dPB00o2NtGiiu';
             const stripe = Stripe(publicKey);
@@ -1264,9 +1283,8 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        cart: this.cart.map(item => ({...item, name: item.name.en})), // Send English names to Stripe
-                        locale: this.currentLanguage,
-                        shipping: shippingDetails
+                        cart: cartForStripe, // Send the new cart array WITH the shipping item
+                        locale: this.currentLanguage 
                     })
                 });
 
