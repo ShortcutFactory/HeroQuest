@@ -723,6 +723,11 @@
                 checkout_title: "Bestellübersicht",
                 checkout_pay_btn: "Sicher mit Stripe bezahlen",
                 checkout_redirecting_btn: "Leite zu Stripe weiter...",
+                checkout_shipping: "Versand",
+                checkout_shipping_de: "Deutschland (6,19 €)",
+                checkout_shipping_int: "International (26,49 €)",
+                checkout_subtotal: "Zwischensumme",
+                checkout_grand_total: "Gesamtsumme",
                 confirm_title: "Bestellung erfolgreich!",
                 confirm_thanks: "Vielen Dank für deinen Einkauf in der Rüstkammer.",
                 confirm_email: "Eine Bestätigung wurde per E-Mail versendet.",
@@ -762,6 +767,11 @@
                 checkout_title: "Order Summary",
                 checkout_pay_btn: "Pay securely with Stripe",
                 checkout_redirecting_btn: "Redirecting to Stripe...",
+                checkout_shipping: "Shipping",
+                checkout_shipping_de: "Germany (€6.19)",
+                checkout_shipping_int: "International (€26.49)",
+                checkout_subtotal: "Subtotal",
+                checkout_grand_total: "Grand Total",
                 confirm_title: "Order Successful!",
                 confirm_thanks: "Thank you for your purchase at the Armory.",
                 confirm_email: "A confirmation has been sent by email.",
@@ -825,13 +835,13 @@
                 category: "zubehoer"
             },
             "chaos-warrior": {
-                name: { de: "Nichts", en: "Nothing" },
-                subtitle: { de: "nichts hier", en: "nothing here" },
-                description: { de: "überhaupt nichts", en: "absolutely nothing" },
-                originalPrice: 1.00,
-                discountPrice: 0.50,
-                img: "",
-                images: [""],
+                name: { de: "Drokmar, der rebllische Ork", en: "Drokmar, the rebellious orc" },
+                subtitle: { de: "", en: "" },
+                description: { de: "Tauchen Sie ein in die Welt von HeroQuest und entdecken Sie Drok-Mar, den rebellischen Ork, der sich in die Sammlung exklusiver Fanmade Charaktere einreiht. Dieser markenlose Miniaturheld besticht durch seine detailreiche Gestaltung und ist ein Muss für Sammler und Spieler, die ihre Decks mit außergewöhnlichen Figuren bereichern möchten. Ideal für Rollenspiele und Tabletop-Schlachten, ist Drok-Mar bereit, sich Ihren Abenteuern anzuschließen und mit seiner unverwechselbaren Persönlichkeit und Kraft zu beeindrucken. Achtung ⚠️ Lieferzeit ca. 10 Tage.", en: "Immerse yourself in the world of HeroQuest and discover Drok-Mar, the rebellious orc who joins the collection of exclusive fan-made characters. This unbranded miniature hero stands out with its detailed design and is a must-have for collectors and players looking to enhance their decks with extraordinary figures. Perfect for role-playing and tabletop battles, Drok-Mar is ready to join your adventures and impress with his unique personality and strength. ⚠️ Please note: delivery time approximately 10 days." },
+                originalPrice: 99.90,
+                discountPrice: 65.90,
+                img: "https://img.kleinanzeigen.de/api/v1/prod-ads/images/cd/cd39df20-7820-4a23-845d-9f8df4fc7ca0?rule=$_59.AUTO",
+                images: ["https://img.kleinanzeigen.de/api/v1/prod-ads/images/cd/cd39df20-7820-4a23-845d-9f8df4fc7ca0?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/bc/bc972e09-790c-4f19-8599-73de88a80c30?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/72/72d35243-d64d-4f6e-bdc9-0e6f6647f725?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/34/34862c49-eda2-477d-8d0b-11d64fd41142?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/53/5364469b-148b-41a9-ba97-b93259519356?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/a6/a6b396d6-c1ff-4e79-9896-efc175f0b9ef?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/43/43599ab0-825e-4c7f-9073-b560ba0e500f?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/51/512e4a38-603d-4391-8ff2-3e1dfd297427?rule=$_59.AUTO", "https://img.kleinanzeigen.de/api/v1/prod-ads/images/84/8415a4c1-8046-4815-90f6-017a9cf3ac44?rule=$_59.AUTO"],
                 category: "neues"
             }
         },
@@ -878,6 +888,7 @@
             document.body.addEventListener('click', this.handleDelegatedClick.bind(this));
             document.addEventListener('keydown', this.handleKeyboard.bind(this));
             document.body.addEventListener('input', this.handleDelegatedInput.bind(this));
+            document.body.addEventListener('change', this.handleDelegatedChange.bind(this));
             this.dom.hamburgerMenu.addEventListener('click', this.toggleNav.bind(this));
         },
         
@@ -961,6 +972,12 @@
                 const item = this.cart.find(i => i.id === id);
                 if (item) item.quantity = newQuantity;
                 this.updateCartUI();
+            }
+        },
+        
+        handleDelegatedChange(e) {
+            if (e.target.name === 'shipping-option') {
+                this.updateCheckoutTotal();
             }
         },
 
@@ -1155,37 +1172,89 @@
         },
 
         // --- CHECKOUT PROCESS ---
+        updateCheckoutTotal() {
+            const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shippingOption = document.querySelector('input[name="shipping-option"]:checked');
+            const shippingCost = shippingOption ? parseFloat(shippingOption.dataset.cost) : 0;
+            const grandTotal = subtotal + shippingCost;
+            
+            const shippingCostDisplay = document.getElementById('shipping-cost-display');
+            const grandTotalDisplay = document.getElementById('grand-total-display');
+
+            if(shippingCostDisplay) shippingCostDisplay.textContent = `${shippingCost.toFixed(2).replace('.',',')} €`;
+            if(grandTotalDisplay) grandTotalDisplay.textContent = `${grandTotal.toFixed(2).replace('.',',')} €`;
+        },
+
         startCheckout() {
             if (this.cart.length === 0) return;
             this.closeModal(this.dom.cartModal);
             
-            const total = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const lang = this.currentLanguage;
+
             const checkoutHtml = `
-                <button class="close-btn" aria-label="${this.translations[this.currentLanguage].aria_close}">&times;</button>
-                <div class="modal-header"><h2 id="checkout-heading">${this.translations[this.currentLanguage].checkout_title}</h2></div>
+                <button class="close-btn" aria-label="${this.translations[lang].aria_close}">&times;</button>
+                <div class="modal-header"><h2 id="checkout-heading">${this.translations[lang].checkout_title}</h2></div>
                 <div class="modal-body">
                     ${this.cart.map(item => `
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <span>${item.quantity}x ${item.name[this.currentLanguage]}</span>
+                            <span>${item.quantity}x ${item.name[lang]}</span>
                             <strong>${(item.price * item.quantity).toFixed(2).replace('.',',')} €</strong>
                         </div>
                     `).join('')}
                     <hr style="border-color: var(--border-dark); margin: 1rem 0;">
-                    <div style="text-align: right; font-size: 1.5rem; color: var(--text-light);">
-                        ${this.translations[this.currentLanguage].cart_total} <span style="color: var(--accent-gold);">${total.toFixed(2).replace('.',',')} €</span>
+                    
+                    <!-- Shipping Options -->
+                    <div style="text-align: left; margin-bottom: 1rem;">
+                        <h4 style="margin-bottom: 0.75rem;">${this.translations[lang].checkout_shipping}</h4>
+                        <div id="shipping-options">
+                            <label style="display: block; cursor:pointer; margin-bottom: 0.5rem;">
+                                <input type="radio" name="shipping-option" value="de" data-cost="6.19" checked>
+                                ${this.translations[lang].checkout_shipping_de}
+                            </label>
+                            <label style="display: block; cursor:pointer;">
+                                <input type="radio" name="shipping-option" value="int" data-cost="26.49">
+                                ${this.translations[lang].checkout_shipping_int}
+                            </label>
+                        </div>
+                    </div>
+                    <hr style="border-color: var(--border-dark); margin: 1rem 0;">
+
+                    <!-- Totals Section -->
+                    <div style="text-align: right;">
+                        <p style="margin: 0.5rem 0; display:flex; justify-content: space-between;">
+                            <span>${this.translations[lang].checkout_subtotal}:</span>
+                            <strong>${subtotal.toFixed(2).replace('.',',')} €</strong>
+                        </p>
+                        <p style="margin: 0.5rem 0; display:flex; justify-content: space-between;">
+                            <span>${this.translations[lang].checkout_shipping}:</span>
+                            <strong id="shipping-cost-display"></strong>
+                        </p>
+                        <hr style="border-top: 1px solid var(--border-dark); margin: 0.5rem 0; border-bottom: none;">
+                        <div style="font-size: 1.5rem; color: var(--text-light); margin-top: 1rem; display:flex; justify-content: space-between; align-items: center;">
+                            <strong>${this.translations[lang].checkout_grand_total}:</strong>
+                            <span id="grand-total-display" style="color: var(--accent-gold);"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" id="confirm-purchase-btn" style="width: 100%;">${this.translations[this.currentLanguage].checkout_pay_btn}</button>
+                    <button class="btn btn-success" id="confirm-purchase-btn" style="width: 100%;">${this.translations[lang].checkout_pay_btn}</button>
                 </div>
             `;
             this.dom.checkoutContainer.innerHTML = checkoutHtml;
             this.openModal(this.dom.checkoutModal);
+            this.updateCheckoutTotal();
         },
 
         async processOrder(btn) {
             btn.disabled = true;
             btn.textContent = this.translations[this.currentLanguage].checkout_redirecting_btn;
+
+            const selectedShippingEl = document.querySelector('input[name="shipping-option"]:checked');
+            const shippingDetails = selectedShippingEl ? {
+                name: selectedShippingEl.value === 'de' ? this.translations['en'].checkout_shipping_de : this.translations['en'].checkout_shipping_int,
+                cost: parseFloat(selectedShippingEl.dataset.cost)
+            } : null;
 
             const publicKey = 'pk_live_51SJvzbEIjtsqLIkTq3luQQKQjdDV5TNRQrUH33xsSkxLn2kbBYpl0KI06Xa5hMeXzSeOAH8tQ0kpIiFKn8yV6dPB00o2NtGiiu';
             const stripe = Stripe(publicKey);
@@ -1196,7 +1265,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         cart: this.cart.map(item => ({...item, name: item.name.en})), // Send English names to Stripe
-                        locale: this.currentLanguage 
+                        locale: this.currentLanguage,
+                        shipping: shippingDetails
                     })
                 });
 
