@@ -398,6 +398,40 @@
             border-width: 0 10px 10px 0;
             transform: rotate(45deg);
         }
+        
+        /* Styles for the new upgrade feature box in checkout */
+        .upgrade-option-box {
+            background-color: var(--bg-light-source);
+            border: 2px solid var(--accent-gold);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+            box-shadow: 0 0 15px rgba(232, 185, 87, 0.3);
+            text-align: left;
+        }
+        .upgrade-option-box h4 {
+            color: var(--accent-gold);
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+        .upgrade-option-box p {
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.9;
+        }
+        .upgrade-option-box label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        .upgrade-option-box input[type="checkbox"] {
+            transform: scale(1.5);
+            accent-color: var(--glow-gold);
+            cursor: pointer;
+        }
 
         /*
         ==========================================================================
@@ -728,6 +762,10 @@
                 checkout_shipping_int: "Versand (International)",
                 checkout_subtotal: "Zwischensumme",
                 checkout_grand_total: "Gesamtsumme",
+                checkout_upgrade_title: "Optional: 100% Originalgetreue Karten",
+                checkout_upgrade_desc: "Verbessere alle Karten deines Sets auf höchste Sammlerqualität. Originale Textur, Eckenradius und Haptik für nur 19,90 € extra.",
+                checkout_upgrade_label: "Ja, ich möchte das Upgrade für 19,90 €",
+                checkout_upgrade_item_name: "Upgrade: Originalgetreue Karten",
                 confirm_title: "Bestellung erfolgreich!",
                 confirm_thanks: "Vielen Dank für deinen Einkauf in der Rüstkammer.",
                 confirm_email: "Eine Bestätigung wurde per E-Mail versendet.",
@@ -772,6 +810,10 @@
                 checkout_shipping_int: "Shipping (International)",
                 checkout_subtotal: "Subtotal",
                 checkout_grand_total: "Grand Total",
+                checkout_upgrade_title: "Optional: 100% Original Grade Cards",
+                checkout_upgrade_desc: "Upgrade all cards in your set to the highest collector's quality. Original texture, corner radius, and feel for just €19.90 extra.",
+                checkout_upgrade_label: "Yes, I want the upgrade for €19.90",
+                checkout_upgrade_item_name: "Upgrade: Original Grade Cards",
                 confirm_title: "Order Successful!",
                 confirm_thanks: "Thank you for your purchase at the Armory.",
                 confirm_email: "A confirmation has been sent by email.",
@@ -797,12 +839,12 @@
         // --- PRODUCT DATA ---
         productData: {
             "rogue-heir-elethorn": {
-                name: { de: "Rogue Heir Elethorn", en: "Rogue Heir Elethorn" },
-                subtitle: { de: "Fanmade Hero Collection aus 2 Helden", en: "Fanmade Hero Collection of 2 Heroes" },
-                description: { de: "HeroQuest Charakter-Sammlung. Unabhängig, aber loyal gegenüber dem Monarchen, ist der Schurkenerbe von Elethorn ein flinker Plänkler, tödlich mit kleinen Klingen. Diese Sammleredition enthält 2 hochdetaillierte Miniaturen, 12 Spielkarten und eine Story-Karte.", en: "HeroQuest Character Collection. Independent, but loyal to the monarch, The Rogue Heir of Elethorn is a nimble skirmisher deadly with small blades. This collector's edition item includes 2 highly-detailed figures, 12 game cards, and a story card." },
+                name: { de: "Schurke von Elethorn", en: "Rogue Heir Elethorn" },
+                subtitle: { de: "Schurke von Elethorn Special Edition Deutsch", en: "Rogue Heir Elethorn Special Edition German" },
+                description: { de: "Tauchen Sie in die Welt von HeroQuest ein und ergänzen Sie Ihr Spiel mit dem FAN-gefertigten Karten-Set “Schurke von Elethorn”. Dieses Set ist ausschließlich für Sammler und Spieler in Deutschland konzipiert und bietet eine exquisite Ergänzung für Ihre HeroQuest-Sammlung.", en: "Immerse yourself in the world of HeroQuest and enhance your game with the fan-made card set “Rogue of Elethorn.” This set is designed exclusively for collectors and players in Germany and offers an exquisite addition to your HeroQuest collection." },
                 originalPrice: 189.90,
-                img: "https://m.media-amazon.com/images/I/81b2+6pc-FL.jpg",
-                images: ["https://m.media-amazon.com/images/I/81b2+6pc-FL.jpg", "https://i.ebayimg.com/images/g/nvEAAeSw9Qto9hPK/s-l1600.webp"],
+                img: "Assets/Download.png",
+                images: ["Assets/Download.png", "https://www.blacksbricks.de/images/product_images/original_images/rogueheirhq31.jpg", "https://i.ebayimg.com/images/g/8Y4AAeSw8O1o~AQk/s-l1600.webp"],
                 category: "neues"
             },
             "demonhunter": {
@@ -985,7 +1027,7 @@
         },
         
         handleDelegatedChange(e) {
-            if (e.target.name === 'shipping-option') {
+            if (e.target.name === 'shipping-option' || e.target.id === 'upgrade-cards-checkbox') {
                 this.updateCheckoutTotal();
             }
         },
@@ -1185,12 +1227,28 @@
             const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const shippingOption = document.querySelector('input[name="shipping-option"]:checked');
             const shippingCost = shippingOption ? parseFloat(shippingOption.dataset.cost) : 0;
-            const grandTotal = subtotal + shippingCost;
+            
+            const upgradeCheckbox = document.getElementById('upgrade-cards-checkbox');
+            const upgradeCost = upgradeCheckbox && upgradeCheckbox.checked ? 19.90 : 0;
+            
+            const grandTotal = subtotal + shippingCost + upgradeCost;
             
             const shippingCostDisplay = document.getElementById('shipping-cost-display');
+            const upgradeCostLine = document.getElementById('upgrade-cost-line');
+            const upgradeCostDisplay = document.getElementById('upgrade-cost-display');
             const grandTotalDisplay = document.getElementById('grand-total-display');
 
             if(shippingCostDisplay) shippingCostDisplay.textContent = `${shippingCost.toFixed(2).replace('.',',')} €`;
+
+            if(upgradeCostLine) {
+                if (upgradeCost > 0) {
+                    upgradeCostDisplay.textContent = `${upgradeCost.toFixed(2).replace('.',',')} €`;
+                    upgradeCostLine.style.display = 'flex';
+                } else {
+                    upgradeCostLine.style.display = 'none';
+                }
+            }
+
             if(grandTotalDisplay) grandTotalDisplay.textContent = `${grandTotal.toFixed(2).replace('.',',')} €`;
         },
 
@@ -1213,6 +1271,16 @@
                     `).join('')}
                     <hr style="border-color: var(--border-dark); margin: 1rem 0;">
                     
+                    <!-- NEW: Card Quality Upgrade Option -->
+                    <div class="upgrade-option-box">
+                        <h4>${this.translations[lang].checkout_upgrade_title}</h4>
+                        <p>${this.translations[lang].checkout_upgrade_desc}</p>
+                        <label>
+                            <input type="checkbox" id="upgrade-cards-checkbox">
+                            ${this.translations[lang].checkout_upgrade_label}
+                        </label>
+                    </div>
+
                     <!-- Shipping Options -->
                     <div style="text-align: left; margin-bottom: 1rem;">
                         <h4 style="margin-bottom: 0.75rem;">${this.translations[lang].checkout_shipping}</h4>
@@ -1234,6 +1302,10 @@
                         <p style="margin: 0.5rem 0; display:flex; justify-content: space-between;">
                             <span>${this.translations[lang].checkout_subtotal}:</span>
                             <strong>${subtotal.toFixed(2).replace('.',',')} €</strong>
+                        </p>
+                        <p id="upgrade-cost-line" style="margin: 0.5rem 0; display:none; justify-content: space-between;">
+                           <span>${this.translations[lang].checkout_upgrade_item_name}:</span>
+                           <strong id="upgrade-cost-display"></strong>
                         </p>
                         <p style="margin: 0.5rem 0; display:flex; justify-content: space-between;">
                             <span>${this.translations[lang].checkout_shipping}:</span>
@@ -1260,8 +1332,9 @@
             btn.textContent = this.translations[this.currentLanguage].checkout_redirecting_btn;
 
             const selectedShippingEl = document.querySelector('input[name="shipping-option"]:checked');
+            const upgradeCheckbox = document.getElementById('upgrade-cards-checkbox');
             
-            // Create a temporary cart that includes the shipping cost as a line item
+            // Create a temporary cart that includes the shipping cost and upgrades as line items
             const cartForStripe = this.cart.map(item => ({
                 id: item.id,
                 name: item.name.en, // Use English name for Stripe
@@ -1269,6 +1342,17 @@
                 quantity: item.quantity
             }));
 
+            // Add Card Upgrade if selected
+            if (upgradeCheckbox && upgradeCheckbox.checked) {
+                cartForStripe.push({
+                    id: 'upgrade-original-cards',
+                    name: this.translations['en'].checkout_upgrade_item_name, // Use English for Stripe
+                    price: 19.90,
+                    quantity: 1
+                });
+            }
+
+            // Add Shipping
             if (selectedShippingEl) {
                 const shippingCost = parseFloat(selectedShippingEl.dataset.cost);
                 const shippingName = selectedShippingEl.value === 'de' 
